@@ -35,11 +35,11 @@ export function initReveal() {
       const delay = parseFloat(el.style.getPropertyValue("--d")) || 0;
       setTimeout(() => el.classList.remove("is-in"), 1100 + delay * 1000);
     });
-  }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+  }, { threshold: 0.01, rootMargin: "0px 0px 6% 0px" }); // fire just before entering: no black gaps on fast scroll
 
   els.forEach((el) => {
     if (el.closest(".hero")) return; // the hero is revealed by the intro sequence
-    if (el.getBoundingClientRect().top < innerHeight * 0.94) return;
+    if (el.getBoundingClientRect().top < innerHeight) return;
     // stagger siblings that share a parent
     const sibs = [...el.parentElement.children].filter((c) => els.has(c));
     const i = sibs.indexOf(el);

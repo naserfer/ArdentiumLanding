@@ -50,24 +50,31 @@ src/
     reveal.js           entradas al hacer scroll y títulos "martillados"
     interact.js         botones magnéticos, tilt 3D, spotlight, contadores
     cursor.js           cursor de brasa
+    lightbox.js         ampliar capturas de MotelApp
+    footer.js           wordmark gigante del pie que se funde bajo el cursor
     ticker.js           loop único + estado compartido de scroll y mouse
 ```
 
 ## Efectos incluidos
 
-- Intro: el logo se dibuja, un pirómetro sube a 1538 °C (punto de fusión del hierro) y las
+- **Intro:** el logo se dibuja, un pirómetro sube a 1538 °C (punto de fusión del hierro) y las
   puertas del horno se abren sobre el hero.
-- Hero WebGL: metal fundido que reacciona al cursor (calor) y al clic (martillazo con onda
-  expansiva, chispas y sacudida). El nombre ARDENTIUM se "vierte" de izquierda a derecha.
-- Termómetro lateral: el scroll es temperatura, de 20 °C a 1538 °C.
-- Marquesina que acelera y se inclina con la velocidad del scroll.
-- Manifiesto que se calienta palabra por palabra.
-- Títulos que entran angostos y fríos y se ensanchan al rojo vivo (fuente variable Anybody).
-- Tarjeta de elemento químico "Ad" con tilt 3D y brillo.
-- Tarjetas de servicios con punto de calor que sigue al cursor.
-- KarúBox: animación pedido → impresión remota → dashboard, sincronizada con el scroll.
-- MotelApp: capturas reales que se despliegan en 3D con el scroll y un láser de escaneo.
-- Proceso con riel de metal fundido que se llena al bajar.
+- **Hero WebGL:** metal fundido que reacciona al cursor (calor) y al clic (martillazo con onda
+  expansiva, chispas y sacudida). ARDENTIUM se "vierte" de izquierda a derecha y queda como
+  metal colado: relieve con luz que sigue al cursor, molde oscuro alrededor, metal líquido
+  por dentro y temblor de calor. Al bajar, el metal se enfría.
+- **Logo integrado:** la A forjada es la primera letra de ARDENTIUM (barra y pie).
+- **Termómetro lateral y barra de progreso en la nav:** el scroll es temperatura, de 20 °C a 1538 °C.
+- **Marquesina doble:** servicios y tecnologías en sentidos opuestos; acelera y se inclina con el scroll.
+- **Manifiesto** que se calienta palabra por palabra y tarjeta de elemento "Ad" con tilt 3D.
+- **Títulos martillados:** entran angostos y fríos y se ensanchan al rojo vivo (fuente variable).
+- **Servicios:** punto de calor que sigue al cursor; en el celular se encienden al pasar por el centro.
+- **KarúBox:** pedido → impresión remota (el ticket sale de la impresora, el LED parpadea) →
+  ventas que suben en vivo, con pasos 1‑2‑3 sincronizados con el scroll.
+- **MotelApp:** capturas reales que se despliegan en 3D, láser de escaneo y clic para ampliar.
+- **Proceso:** riel de metal fundido que se llena y enciende cada paso.
+- **Contacto:** la lava del fondo se calienta a medida que te acercás.
+- **Pie:** wordmark gigante en contorno que se funde donde pasa el cursor.
 - Botones magnéticos, cursor de brasa, textos que se decodifican al pasar el mouse.
 
 Accesibilidad: respeta `prefers-reduced-motion` (sin intro ni partículas), tiene enlace para

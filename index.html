@@ -58,11 +58,8 @@
 
   <!-- ============ NAV ============ -->
   <header class="nav" id="nav">
-    <a class="nav__brand" href="#top" aria-label="Ardentium, ir al inicio">
-      <svg class="logo-mark" viewBox="0 0 100 100" aria-hidden="true">
-        <use href="#mark" />
-      </svg>
-      <span class="nav__word">ARDENTIUM</span>
+    <a class="brand nav__brand" href="#top" aria-label="Ardentium, ir al inicio">
+      <svg class="brand__a" viewBox="0 0 100 100" aria-hidden="true"><use href="#mark" /></svg><span class="brand__rest" aria-hidden="true">RDENTIUM</span>
     </a>
     <nav class="nav__links" aria-label="Principal">
       <a href="#servicios" data-scramble>Servicios</a>
@@ -74,6 +71,7 @@
       <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wa" /></svg>
       <span>Hablemos</span>
     </a>
+    <span class="nav__progress" id="navProgress" aria-hidden="true"></span>
   </header>
 
   <main id="contenido">
@@ -83,7 +81,7 @@
       <div class="hero__scrim" aria-hidden="true"></div>
       <div class="hero__inner wrap">
         <p class="eyebrow hero__eyebrow" data-split>
-          <span>Fábrica de desarrollo</span><i></i><span>Asunción, PY</span><i></i><span>Est. 2026</span>
+          <span>Fábrica de desarrollo</span><span>Asunción, PY</span><span>Est. 2026</span>
         </p>
         <h1 class="sr-only">Ardentium, fábrica de desarrollo de software</h1>
         <!-- The molten wordmark is painted by WebGL inside this box -->
@@ -118,6 +116,9 @@
       <div class="marquee__track" id="marquee">
         <span>Vanguardia</span><b></b><span>Software a medida</span><b></b><span>SaaS</span><b></b><span>Apps de escritorio</span><b></b><span>Apps móviles</span><b></b><span>IA y automatización</span><b></b>
       </div>
+      <div class="marquee__track marquee__track--stack" id="marquee2">
+        <span>TypeScript</span><i>/</i><span>React</span><i>/</i><span>Node</span><i>/</i><span>Rust</span><i>/</i><span>Tauri</span><i>/</i><span>SQLite</span><i>/</i><span>PostgreSQL</span><i>/</i><span>Supabase</span><i>/</i><span>React Native</span><i>/</i><span>Agentes IA</span><i>/</i><span>WhatsApp API</span><i>/</i><span>ESC/POS</span><i>/</i>
+      </div>
     </div>
 
     <!-- ============ EL NOMBRE ============ -->
@@ -151,24 +152,28 @@
           <svg class="card__ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M14 34h22a8 8 0 0 0 1-15.9A11 11 0 0 0 16 16a9 9 0 0 0-2 18Z"/><path d="M19 27h10M24 22v10"/></svg>
           <h3 class="card__title">Software a medida y SaaS</h3>
           <p>Plataformas web y sistemas en la nube que ordenan tu operación y crecen con vos.</p>
+          <p class="alloy__label">Aleación</p>
           <ul class="alloy"><li>TypeScript</li><li>React</li><li>Node</li><li>PostgreSQL</li></ul>
         </article>
         <article class="card" data-spot>
           <svg class="card__ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="9" width="36" height="24" rx="3"/><path d="M18 40h12M24 33v7"/><path d="M15 21l5 5 12-10"/></svg>
           <h3 class="card__title">Apps de escritorio y offline</h3>
           <p>Sistemas que siguen funcionando sin internet: imprimen, sincronizan y se respaldan solos.</p>
+          <p class="alloy__label">Aleación</p>
           <ul class="alloy"><li>Tauri</li><li>Rust</li><li>SQLite</li><li>Sync</li></ul>
         </article>
         <article class="card" data-spot>
           <svg class="card__ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="14" y="4" width="20" height="40" rx="4"/><path d="M21 38h6"/><path d="M19 16h10M19 22h7"/></svg>
           <h3 class="card__title">Apps móviles</h3>
           <p>Apps para iOS y Android con la calidad de producto que tu marca merece.</p>
+          <p class="alloy__label">Aleación</p>
           <ul class="alloy"><li>iOS</li><li>Android</li><li>React Native</li></ul>
         </article>
         <article class="card" data-spot>
           <svg class="card__ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4l3.5 12.5L40 20l-12.5 3.5L24 36l-3.5-12.5L8 20l12.5-3.5Z"/><path d="M38 32l1.5 4.5L44 38l-4.5 1.5L38 44l-1.5-4.5L32 38l4.5-1.5Z"/></svg>
           <h3 class="card__title">IA y automatización</h3>
           <p>Asistentes, bots e integraciones que eliminan tareas repetitivas y atienden por vos.</p>
+          <p class="alloy__label">Aleación</p>
           <ul class="alloy"><li>Agentes</li><li>WhatsApp</li><li>APIs</li><li>Integraciones</li></ul>
         </article>
       </div>
@@ -220,6 +225,7 @@
             <div class="karu__beam"><i></i><i></i><i></i></div>
             <div class="karu__printer">
               <div class="kpr__body"><span class="kpr__led"></span><span class="kpr__slot"></span></div>
+              <div class="kpr__out">
               <div class="kpr__paper" id="karuPaper">
                 <p class="kt__head">COCINA · #0417</p>
                 <p>2 × Lomito completo</p>
@@ -228,16 +234,22 @@
                 <p class="kt__cut">- - - - - - - - - - - -</p>
                 <p class="kt__foot">Mesa 4 · 21:42</p>
               </div>
+              </div>
             </div>
             <div class="karu__dash">
-              <div class="kd__head"><span>Ventas de hoy</span><b>Gs. 3.412.000</b></div>
+              <div class="kd__head"><span>Ventas de hoy</span><b id="karuSales">Gs. 3.412.000</b></div>
               <svg class="kd__chart" viewBox="0 0 200 70" preserveAspectRatio="none">
                 <path class="kd__area" d="M0 62 L20 55 L40 58 L60 44 L80 47 L100 35 L120 38 L140 24 L160 28 L180 14 L200 9 L200 70 L0 70Z" />
-                <path class="kd__line" d="M0 62 L20 55 L40 58 L60 44 L80 47 L100 35 L120 38 L140 24 L160 28 L180 14 L200 9" pathLength="1" />
+                <path class="kd__line" d="M0 62 L20 55 L40 58 L60 44 L80 47 L100 35 L120 38 L140 24 L160 28 L180 14 L200 9" />
               </svg>
               <div class="kd__row"><span>Stock pan de lomito</span><b class="kd__stock"><i></i></b></div>
               <div class="kd__row"><span>Puntos acumulados</span><b>+98</b></div>
             </div>
+            <ol class="karu__steps">
+              <li class="is-on"><b>1</b>Pedido desde el celular</li>
+              <li class="is-on"><b>2</b>Impresión remota en cocina</li>
+              <li class="is-on"><b>3</b>Ventas y stock en vivo</li>
+            </ol>
           </div>
         </div>
       </article>
@@ -259,14 +271,23 @@
             <ul class="alloy"><li>Tauri 2</li><li>React</li><li>TypeScript</li><li>Rust</li><li>SQLite</li><li>Supabase</li><li>ESC/POS</li></ul>
           </div>
           <div class="screens" id="motelStage">
-            <figure class="screen screen--3" data-cursor="Análisis">
-              <img src="./assets/works/motelapp-analisis.webp" alt="Pantalla de análisis de MotelApp con ingresos día a día y estado de habitaciones" width="1600" height="1000" loading="lazy" decoding="async" />
+            <figure class="screen screen--3">
+              <button class="screen__btn" type="button" data-zoom data-cursor="Ampliar" aria-label="Ampliar captura: análisis del negocio">
+                <img src="./assets/works/motelapp-analisis.webp" alt="Pantalla de análisis de MotelApp con ingresos día a día y estado de habitaciones" width="1600" height="1000" loading="lazy" decoding="async" />
+              </button>
+              <figcaption class="screen__tag">Análisis</figcaption>
             </figure>
-            <figure class="screen screen--2" data-cursor="Cuenta">
-              <img src="./assets/works/motelapp-cuenta.webp" alt="Cuenta de una habitación ocupada en MotelApp con tienda de consumos y total" width="1600" height="1000" loading="lazy" decoding="async" />
+            <figure class="screen screen--2">
+              <button class="screen__btn" type="button" data-zoom data-cursor="Ampliar" aria-label="Ampliar captura: cuenta de una habitación">
+                <img src="./assets/works/motelapp-cuenta.webp" alt="Cuenta de una habitación ocupada en MotelApp con tienda de consumos y total" width="1600" height="1000" loading="lazy" decoding="async" />
+              </button>
+              <figcaption class="screen__tag">Cuenta</figcaption>
             </figure>
-            <figure class="screen screen--1" data-cursor="Tablero">
-              <img src="./assets/works/motelapp-tablero.webp" alt="Tablero de habitaciones de MotelApp con estados libre, ocupada, sucia, reservada y bloqueada" width="1600" height="1000" loading="lazy" decoding="async" />
+            <figure class="screen screen--1">
+              <button class="screen__btn" type="button" data-zoom data-cursor="Ampliar" aria-label="Ampliar captura: tablero de habitaciones">
+                <img src="./assets/works/motelapp-tablero.webp" alt="Tablero de habitaciones de MotelApp con estados libre, ocupada, sucia, reservada y bloqueada" width="1600" height="1000" loading="lazy" decoding="async" />
+              </button>
+              <figcaption class="screen__tag">Tablero en vivo</figcaption>
               <span class="screen__scan"></span>
             </figure>
           </div>
@@ -306,14 +327,53 @@
     </section>
   </main>
 
-  <footer class="foot wrap">
-    <div class="foot__brand">
-      <svg class="logo-mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#mark" /></svg>
-      <div><b>ARDENTIUM</b><span>Fábrica de desarrollo</span></div>
+  <footer class="foot" id="pie">
+    <div class="wrap foot__grid">
+      <div class="foot__col">
+        <a class="brand foot__brand" href="#top" aria-label="Ardentium, volver al inicio">
+          <svg class="brand__a" viewBox="0 0 100 100" aria-hidden="true"><use href="#mark" /></svg><span class="brand__rest" aria-hidden="true">RDENTIUM</span>
+        </a>
+        <p class="foot__lead">Fábrica de desarrollo en Asunción, Paraguay. Software a medida, apps e IA aplicada.</p>
+      </div>
+      <nav class="foot__nav" aria-label="Pie de página">
+        <p class="foot__label">Mapa</p>
+        <a href="#servicios">Servicios</a>
+        <a href="#trabajos">Trabajos</a>
+        <a href="#proceso">Proceso</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
+      <div class="foot__nav">
+        <p class="foot__label">Trabajos</p>
+        <a href="#karubox">KarúBox</a>
+        <a href="#motelapp">MotelApp</a>
+        <a href="https://www.karubox.com.py/" target="_blank" rel="noopener">karubox.com.py ↗</a>
+      </div>
+      <div class="foot__nav">
+        <p class="foot__label">Hablemos</p>
+        <a data-wa href="https://wa.me/595000000000" target="_blank" rel="noopener">WhatsApp</a>
+        <span class="foot__num" data-wa-number>+595 000 000 000</span>
+      </div>
     </div>
-    <p class="foot__motto">Vanguardia.</p>
-    <p class="foot__meta">Asunción, Paraguay · © <span id="year">2026</span> Ardentium</p>
+    <div class="foot__giant" id="footGiant" aria-hidden="true">
+      <div class="giant giant--line"><svg class="giant__a" viewBox="0 0 100 100"><use href="#mark-line" /></svg><span>RDENTIUM</span></div>
+      <div class="giant giant--hot"><svg class="giant__a" viewBox="0 0 100 100"><use href="#mark" /></svg><span>RDENTIUM</span></div>
+    </div>
+    <div class="wrap foot__bottom">
+      <p>© <span id="year">2026</span> Ardentium · Asunción, Paraguay</p>
+      <p class="foot__motto">Vanguardia.</p>
+      <a class="foot__top" href="#top">Volver arriba <span aria-hidden="true">↑</span></a>
+    </div>
   </footer>
+
+  <dialog class="lightbox" id="lightbox" aria-label="Captura ampliada">
+    <figure class="lightbox__fig">
+      <img id="lightboxImg" src="" alt="" />
+      <figcaption id="lightboxCap"></figcaption>
+    </figure>
+    <button class="lightbox__close" type="button" id="lightboxClose" aria-label="Cerrar">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+    </button>
+  </dialog>
 
   <a class="wa-float" data-wa data-cursor="WhatsApp" href="https://wa.me/595000000000" target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp">
     <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wa" /></svg>
@@ -336,6 +396,13 @@
         <rect x="26" y="63" width="48" height="13" rx="2.5" fill="#0b0908" />
         <rect class="mark-ingot" x="29" y="66" width="42" height="7" rx="1.8" fill="url(#g-ingot)" />
         <path class="mark-flame" d="M50 0 C54.5 5 56 9.5 50 14 C44 9.5 45.5 5 50 0Z" fill="url(#g-flame)" />
+      </symbol>
+      <symbol id="mark-line" viewBox="0 0 100 100">
+        <g fill="none" stroke="currentColor" stroke-width="1">
+          <path vector-effect="non-scaling-stroke" d="M44 17 L56 17 L95 95 L76 95 L50 43 L24 95 L5 95 Z" />
+          <rect vector-effect="non-scaling-stroke" x="29" y="66" width="42" height="7" rx="1.8" />
+          <path vector-effect="non-scaling-stroke" d="M50 0 C54.5 5 56 9.5 50 14 C44 9.5 45.5 5 50 0Z" />
+        </g>
       </symbol>
       <symbol id="i-wa" viewBox="0 0 24 24">
         <path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.9-4.45 9.9-9.91A9.86 9.86 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.23 8.23 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24a8.2 8.2 0 0 1 8.24 8.25c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.43-.06-.13-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.29Z" />

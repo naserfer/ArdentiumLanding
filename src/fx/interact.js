@@ -103,3 +103,12 @@ export function initCounters() {
     if (el.getBoundingClientRect().top > innerHeight) { el.textContent = "0"; io.observe(el); }
   });
 }
+
+/** Touch screens have no hover: a card "heats up" while it crosses the middle of the screen. */
+export function initTouchHeat() {
+  if (state.pointerFine || !("IntersectionObserver" in window)) return;
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => e.target.classList.toggle("is-hot", e.isIntersecting));
+  }, { rootMargin: "-38% 0px -38% 0px" });
+  document.querySelectorAll("[data-spot]").forEach((el) => io.observe(el));
+}

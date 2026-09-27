@@ -25,13 +25,14 @@ export function initScrollFx() {
   }
 
   /* ---------- heat gauge ---------- */
-  const gFill = $("#gaugeFill"), gTemp = $("#gaugeTemp"), gauge = $(".gauge");
+  const gFill = $("#gaugeFill"), gTemp = $("#gaugeTemp"), gauge = $(".gauge"), navBar = $("#navProgress");
   if (gFill) {
     updaters.push((s) => {
       gauge.classList.toggle("is-on", s.scrollY > s.vh * 0.6 && !document.documentElement.classList.contains("is-loading"));
       const max = document.documentElement.scrollHeight - s.vh;
       const p = clamp(s.scrollY / Math.max(1, max));
       gFill.style.transform = `scaleY(${p})`;
+      if (navBar) navBar.style.transform = `scaleX(${p})`;
       gTemp.textContent = Math.round(20 + p * (MELT - 20));
     });
   }
@@ -49,29 +50,32 @@ export function initScrollFx() {
     });
   }
 
-  /* ---------- marquee: base drift + scroll velocity, skews with speed ---------- */
-  const track = $("#marquee");
-  if (track && !state.reduced) {
-    // clone content until it is at least twice the viewport for a seamless loop
-    const original = [...track.children];
-    let copies = 1;
-    do { original.forEach((n) => track.appendChild(n.cloneNode(true))); copies++; }
-    while (track.scrollWidth < innerWidth * 2.4 && copies < 12);
-    // one loop period = distance between the first item of copy 1 and copy 2
-    const period = () => track.children[original.length].offsetLeft - track.children[0].offsetLeft || 1;
-    let x = 0, w = period();
-    addEventListener("resize", () => { w = period(); }, { passive: true });
-    if (document.fonts) document.fonts.ready.then(() => { w = period(); });
-    let vis = true;
-    watchVisible(track, (v) => { vis = v; }, "100px");
-    updaters.push((s) => {
-      if (!vis) return;
-      const speed = 60 + Math.min(Math.abs(s.scrollVel) * 28, 1400);
-      x -= speed * s.dt * (s.scrollDir >= 0 ? 1 : -1);
-      if (x <= -w) x += w;
-      if (x > 0) x -= w;
-      const skew = clamp(s.scrollVel * -0.35, -10, 10);
-      track.style.transform = `translate3d(${x}px,0,0) skewX(${skew}deg)`;
+  /* ---------- marquee rows: base drift + scroll velocity, skew with speed, opposite directions ---------- */
+  if (!state.reduced) {
+    [["#marquee", 1, 60], ["#marquee2", -1, 38]].forEach(([sel, dir, base]) => {
+      const track = $(sel);
+      if (!track) return;
+      // clone content until it is well over twice the viewport for a seamless loop
+      const original = [...track.children];
+      let copies = 1;
+      do { original.forEach((n) => track.appendChild(n.cloneNode(true))); copies++; }
+      while (track.scrollWidth < innerWidth * 2.4 && copies < 14);
+      // one loop period = distance between the first item of copy 1 and copy 2
+      const period = () => track.children[original.length].offsetLeft - track.children[0].offsetLeft || 1;
+      let x = dir > 0 ? 0 : -period(), w = period();
+      addEventListener("resize", () => { w = period(); }, { passive: true });
+      if (document.fonts) document.fonts.ready.then(() => { w = period(); });
+      let vis = true;
+      watchVisible(track, (v) => { vis = v; }, "100px");
+      updaters.push((s) => {
+        if (!vis) return;
+        const speed = base + Math.min(Math.abs(s.scrollVel) * 26, 1300);
+        x -= speed * s.dt * (s.scrollDir >= 0 ? 1 : -1) * dir;
+        if (x <= -w) x += w;
+        if (x > 0) x -= w;
+        const skew = clamp(s.scrollVel * -0.35 * dir, -10, 10);
+        track.style.transform = `translate3d(${x}px,0,0) skewX(${skew}deg)`;
+      });
     });
   }
 
@@ -109,6 +113,10 @@ export function initScrollFx() {
   /* ---------- KarúBox: order → print → dashboard ---------- */
   const karuCase = $("#karubox"), karu = $("#karuStage");
   if (karu && !state.reduced) {
+    const stepsK = [...karu.querySelectorAll(".karu__steps li")];
+    const sales = $("#karuSales");
+    const fmt = (n) => "Gs. " + Math.round(n / 1000).toLocaleString("es-PY").replace(/,/g, ".") + ".000";
+    let lastSales = "";
     updaters.push((s) => {
       const r = karuCase.getBoundingClientRect();
       if (r.bottom < 0 || r.top > s.vh) return;
@@ -118,7 +126,14 @@ export function initScrollFx() {
       karu.style.setProperty("--p2", p2.toFixed(3));
       karu.style.setProperty("--p2g", (1 - Math.abs(p2 * 2 - 1)).toFixed(3));
       karu.style.setProperty("--p3", easeInOut(clamp((p - 0.42) / 0.3)).toFixed(3));
-      karu.style.setProperty("--p4", easeInOut(clamp((p - 0.62) / 0.36)).toFixed(3));
+      const p3 = clamp((p - 0.42) / 0.3), p4 = easeInOut(clamp((p - 0.62) / 0.36));
+      karu.style.setProperty("--p4", p4.toFixed(3));
+      karu.classList.toggle("is-printing", p3 > 0.02 && p3 < 0.98);
+      stepsK[0].classList.toggle("is-on", p > 0.04);
+      stepsK[1].classList.toggle("is-on", p3 > 0.02);
+      stepsK[2].classList.toggle("is-on", p4 > 0.02);
+      const txt = fmt(3314000 + 98000 * p4);
+      if (sales && txt !== lastSales) { sales.textContent = txt; lastSales = txt; }
     });
   }
 

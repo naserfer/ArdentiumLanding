@@ -28,6 +28,7 @@ uniform float uBase;
 uniform float uScroll;
 uniform vec2 uTC;
 uniform vec2 uSq;
+uniform vec2 uTexel;
 varying vec2 vUv;
 
 float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
@@ -74,25 +75,51 @@ void main() {
   float md = length(p - m);
   temp += uHeat * (.42 * exp(-md * md * 16.) + veins * .7 * exp(-md * md * 3.5));
 
+  // the metal cools as the hero scrolls away
+  float cool = 1. - uScroll * .6;
+  temp *= cool;
+
   if (uTextOn > .0) {
     vec2 tuv = uTC + (vUv - uTC) / uSq;
+    // heat shimmer: the air above molten metal wobbles
+    tuv.y += (noise(vec2(tuv.x * 38., uTime * 1.6)) - .5) * .0035;
+    tuv.x += (noise(vec2(tuv.y * 30., uTime * 1.3 + 7.)) - .5) * .002;
     vec4 tx = texture2D(uText, tuv);
     float ign = smoothstep(tuv.x, tuv.x + .12, uIgnite * 1.14);
     float inside = tx.r * ign;
-    float glow = tx.g * ign;
+
+    // the mould: a dark, cooled rim so the letters read against the veins
+    float moat = smoothstep(.05, .55, tx.g) * (1. - tx.r) * ign;
+    temp *= 1. - moat * .72;
+    temp += tx.g * (1. - tx.r) * ign * .16;
+
+    // cast‑metal bevel: normal from the narrow blur (B), lit by the cursor
+    vec2 o = uTexel * 2.;
+    float bx = texture2D(uText, tuv + vec2(o.x, 0.)).b - texture2D(uText, tuv - vec2(o.x, 0.)).b;
+    float by = texture2D(uText, tuv + vec2(0., o.y)).b - texture2D(uText, tuv - vec2(0., o.y)).b;
+    vec3 n = normalize(vec3(-bx * 3.2, -by * 3.2, 1.));
+    vec3 L = normalize(vec3(m - p, .55));
+    float diff = max(dot(n, L), 0.);
+    float spec = pow(max(dot(reflect(-L, n), vec3(0., 0., 1.)), 0.), 22.);
+
     float mf = fbm(p * 4.2 + vec2(t * 3., -t * 6.) + 2. * r);
-    float textTemp = .58 + .3 * mf + .12 * veins + uHeat * .2 * exp(-md * md * 5.);
-    temp = mix(temp, textTemp, inside);
-    temp += glow * .34 * (.65 + .35 * mf);
-    float e = (tuv.x - (uIgnite * 1.14 - .06)) * 16.;
-    temp += exp(-e * e) * tx.g * step(uIgnite, .999) * .9;
+    float textTemp = .5 + .34 * mf + .1 * veins;
+    textTemp *= .78 + .3 * diff;
+    textTemp += spec * (.35 + .5 * uHeat) + uHeat * .12 * exp(-md * md * 5.);
+    temp = mix(temp, textTemp * mix(1., cool, .5), inside);
+
+    // bright pouring front while the word fills
+    float ie = (tuv.x - (uIgnite * 1.14 - .06)) * 16.;
+    temp += exp(-ie * ie) * tx.g * step(uIgnite, .999) * .9;
   }
 
   if (uStrike.w > 0.) {
     vec2 sp = (uStrike.xy - .5 * uRes) / uRes.y;
     float sd = length(p - sp);
-    float rr = (sd - uStrike.z * .95) * 15.;
-    temp += (exp(-rr * rr) * exp(-uStrike.z * 2.2) * .75 + exp(-sd * 8.) * exp(-uStrike.z * 5.) * .95) * uStrike.w;
+    float rr = (sd - uStrike.z * 1.05) * 20.;
+    float ring = exp(-rr * rr) * exp(-uStrike.z * 2.4);
+    float flash = exp(-sd * 16.) * exp(-uStrike.z * 7.);
+    temp += (ring * .55 + flash * .6) * uStrike.w;
   }
 
   vec3 col = ramp(temp);
@@ -134,7 +161,8 @@ export class Forge {
     this.ok = true;
 
     this.resize();
-    new ResizeObserver(() => this.resize()).observe(canvas);
+    // resize lazily at the start of the next frame, so a resized canvas is never presented blank
+    new ResizeObserver(() => { this.dirty = true; }).observe(canvas);
     watchVisible(canvas, (v) => { this.visible = v; }, "80px");
   }
 
@@ -155,7 +183,7 @@ export class Forge {
     gl.useProgram(pr);
     this.pr = pr;
     this.u = {};
-    for (const n of ["uRes", "uTime", "uMouse", "uHeat", "uStrike", "uText", "uTextOn", "uIgnite", "uBase", "uScroll", "uTC", "uSq"]) {
+    for (const n of ["uRes", "uTime", "uMouse", "uHeat", "uStrike", "uText", "uTextOn", "uIgnite", "uBase", "uScroll", "uTC", "uSq", "uTexel"]) {
       this.u[n] = gl.getUniformLocation(pr, n);
     }
     return true;
@@ -187,14 +215,13 @@ export class Forge {
   drawText() {
     const el = this.opts.textEl;
     if (!this.ok || !el) return;
-    const W = this.canvas.width, H = this.canvas.height;
     const tc = this.textCanvas;
-    // the texture only needs modest resolution; it is sampled with linear filtering
-    const k = Math.min(1, 1400 / W);
-    tc.width = Math.max(2, Math.round(W * k));
-    tc.height = Math.max(2, Math.round(H * k));
-    const ctx = tc.getContext("2d");
     const cr = this.canvas.getBoundingClientRect();
+    // texture resolution follows the CSS size (capped), not the adaptive render size
+    const k = Math.min(1, 1400 / Math.max(1, cr.width));
+    tc.width = Math.max(2, Math.round(cr.width * k));
+    tc.height = Math.max(2, Math.round(cr.height * k));
+    const ctx = tc.getContext("2d");
     const er = el.getBoundingClientRect();
     const sx = tc.width / cr.width, sy = tc.height / cr.height;
     const box = { x: (er.left - cr.left) * sx, y: (er.top - cr.top) * sy, w: er.width * sx, h: er.height * sy };
@@ -230,6 +257,11 @@ export class Forge {
       ctx.shadowBlur = blur;
       for (let i = 0; i < reps; i++) ctx.fillText(word, x - off, y);
     }
+    // B = a narrow blur of the letters, used as a height map for the bevel
+    ctx.shadowColor = "rgb(0,0,255)";
+    ctx.fillStyle = "rgb(0,0,255)";
+    ctx.shadowBlur = Math.max(2, size * 0.045);
+    ctx.fillText(word, x - off, y);
     ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowColor = "transparent";
     ctx.fillStyle = "rgb(255,0,0)";
     ctx.fillText(word, x, y);
@@ -241,6 +273,7 @@ export class Forge {
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tc);
     // hammer squash pivots around the word's centre (uv space, y up)
     this.tc = [(box.x + box.w / 2) / tc.width, 1 - (box.y + box.h / 2) / tc.height];
+    this.texel = [1 / tc.width, 1 / tc.height];
     this.textReady = true;
     this.still = false;
   }
@@ -252,12 +285,17 @@ export class Forge {
     const w = Math.max(2, Math.round(r.width * dpr * this.quality));
     const h = Math.max(2, Math.round(r.height * dpr * this.quality));
     if (w !== this.canvas.width || h !== this.canvas.height) {
+      const sx = w / this.canvas.width, sy = h / this.canvas.height;
       this.canvas.width = w; this.canvas.height = h;
       this.gl.viewport(0, 0, w, h);
       this.still = false;
-      if (!this.hasPointer) { this.tx = this.mx = w * 0.62; this.ty = this.my = h * 0.45; }
-      this.drawText();
+      // keep pointer + strike positions in the new pixel space
+      this.mx *= sx; this.tx *= sx; this.my *= sy; this.ty *= sy;
+      this.strike.x *= sx; this.strike.y *= sy;
+      if (!this.hasPointer && !this._placed) { this._placed = true; this.tx = this.mx = w * 0.62; this.ty = this.my = h * 0.45; }
     }
+    const cssKey = `${Math.round(r.width)}x${Math.round(r.height)}`;
+    if (cssKey !== this.cssKey) { this.cssKey = cssKey; this.drawText(); }
   }
 
   /** client coords → canvas px (y up) */
@@ -282,6 +320,7 @@ export class Forge {
 
   render(s) {
     if (!this.ok || !this.visible) return;
+    if (this.dirty) { this.dirty = false; this.resize(); }
     // reduced motion: paint one still frame (again only after a resize / text change)
     if (state.reduced) { if (this.still) return; this.still = true; }
     const t0 = performance.now();
@@ -317,6 +356,7 @@ export class Forge {
     gl.uniform1f(u.uScroll, this.scrollK);
     gl.uniform2f(u.uTC, this.tc ? this.tc[0] : 0.5, this.tc ? this.tc[1] : 0.5);
     gl.uniform2f(u.uSq, this.sq.x, this.sq.y);
+    gl.uniform2f(u.uTexel, this.texel ? this.texel[0] : 0.001, this.texel ? this.texel[1] : 0.001);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.tex);
     gl.uniform1i(u.uText, 0);
@@ -331,7 +371,6 @@ export class Forge {
     if (this.frameTimes.length < 90) return;
     const avg = this.frameTimes.reduce((a, b) => a + b, 0) / this.frameTimes.length;
     this.frameTimes.length = 0;
-    if (avg > 24 && this.quality > 0.36) { this.quality = Math.max(0.36, this.quality - 0.12); this.resize(); }
-    else if (avg < 15 && this.quality < (state.mobile ? 0.6 : 0.85)) { this.quality += 0.06; this.resize(); }
+    if (avg > 24 && this.quality > 0.36) { this.quality = Math.max(0.36, this.quality - 0.12); this.dirty = true; }
   }
 }

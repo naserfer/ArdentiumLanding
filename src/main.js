@@ -10,7 +10,9 @@ import { initCursor } from "./fx/cursor.js";
 import { runPreloader } from "./fx/preloader.js";
 import { initScrollFx } from "./fx/scroll.js";
 import { initReveal, initForgeHeadings } from "./fx/reveal.js";
-import { initMagnetic, initScramble, initTilt, initSpot, initCounters } from "./fx/interact.js";
+import { initMagnetic, initScramble, initTilt, initSpot, initCounters, initTouchHeat } from "./fx/interact.js";
+import { initLightbox } from "./fx/lightbox.js";
+import { initFooterGiant } from "./fx/footer.js";
 
 window.__ardentium = true;
 const html = document.documentElement;
@@ -93,15 +95,26 @@ initScramble();
 initTilt();
 initSpot();
 initCounters();
+initTouchHeat();
+initLightbox();
+const giantTick = initFooterGiant();
 initReveal();
 initForgeHeadings(sparks);
 const cursorTick = initCursor();
 const scrollTick = initScrollFx();
 
 /* ---------- the loop ---------- */
+const cta = document.getElementById("contacto");
 onTick((s) => {
   if (forge.ok) forge.render(s);
-  if (forge2.ok) forge2.render(s);
+  if (forge2.ok) {
+    // the contact furnace heats up as you approach it
+    const r = cta.getBoundingClientRect();
+    const k = Math.min(1, Math.max(0, (s.vh - r.top) / (s.vh * 0.95)));
+    forge2.opts.base = 0.42 + 0.58 * k * k * (3 - 2 * k);
+    forge2.render(s);
+  }
+  if (giantTick) giantTick(s);
   if (sparks) sparks.tick(s);
   if (cursorTick) cursorTick(s);
   scrollTick(s);
