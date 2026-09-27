@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Ardentium</title>
+  <meta name="description" content="Ardentium es una fábrica de desarrollo en Asunción, Paraguay. Forjamos software a medida, SaaS, apps de escritorio y móviles, e IA aplicada. Vanguardia." />
+  <meta name="theme-color" content="#0b0908" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Ardentium · Fábrica de desarrollo" />
+  <meta property="og:description" content="Forjamos software de vanguardia: sistemas a medida, apps y automatización con IA. Asunción, Paraguay." />
+  <meta property="og:locale" content="es_PY" />
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anybody:ital,wdth,wght@0,50..150,100..900;1,50..150,100..900&family=Instrument+Sans:wdth,wght@75..100,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap" />
+  <link rel="stylesheet" href="./src/styles/main.css" />
+  <script>
+    /* Arm the intro before first paint; if the app never boots, fail open after 6 s. */
+    (function (d) {
+      var h = d.documentElement;
+      var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+      h.classList.add("js");
+      if (!reduce) h.classList.add("is-loading");
+      setTimeout(function () { if (!window.__ardentium) h.classList.remove("js", "is-loading"); }, 6000);
+    })(document);
+  </script>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+
+  <!-- ============ PRELOADER: ignición ============ -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader__door loader__door--top"></div>
+    <div class="loader__door loader__door--bottom"></div>
+    <div class="loader__core">
+      <svg class="loader__mark" viewBox="0 0 100 100" aria-hidden="true">
+        <path class="lm-legs" d="M44 17 L56 17 L95 95 L76 95 L50 43 L24 95 L5 95 Z" pathLength="1" />
+        <rect class="lm-ingot" x="29" y="66" width="42" height="7" rx="1.8" />
+        <path class="lm-flame" d="M50 0 C54.5 5 56 9.5 50 14 C44 9.5 45.5 5 50 0Z" />
+      </svg>
+      <div class="loader__temp"><span id="loaderTemp">0000</span><small>°C</small></div>
+      <div class="loader__bar"><span id="loaderBar"></span></div>
+      <p class="loader__label">Encendiendo la forja</p>
+    </div>
+  </div>
+
+  <!-- ============ FX layers ============ -->
+  <canvas class="sparks" id="sparks" aria-hidden="true"></canvas>
+  <div class="cursor" id="cursor" aria-hidden="true"><span class="cursor__dot"></span><span class="cursor__ring"><em class="cursor__label"></em></span></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Heat gauge: scroll progress as temperature -->
+  <aside class="gauge" aria-hidden="true">
+    <div class="gauge__tube"><div class="gauge__fill" id="gaugeFill"></div></div>
+    <div class="gauge__read"><b id="gaugeTemp">20</b><small>°C</small></div>
+  </aside>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <a class="nav__brand" href="#top" aria-label="Ardentium, ir al inicio">
+      <svg class="logo-mark" viewBox="0 0 100 100" aria-hidden="true">
+        <use href="#mark" />
+      </svg>
+      <span class="nav__word">ARDENTIUM</span>
+    </a>
+    <nav class="nav__links" aria-label="Principal">
+      <a href="#servicios" data-scramble>Servicios</a>
+      <a href="#trabajos" data-scramble>Trabajos</a>
+      <a href="#proceso" data-scramble>Proceso</a>
+      <a href="#contacto" data-scramble>Contacto</a>
+    </nav>
+    <a class="btn btn--molten nav__cta" data-wa data-magnetic href="https://wa.me/595000000000" target="_blank" rel="noopener">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wa" /></svg>
+      <span>Hablemos</span>
+    </a>
+  </header>
+
+  <main id="contenido">
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="top">
+      <canvas class="hero__gl" id="forge" aria-hidden="true"></canvas>
+      <div class="hero__scrim" aria-hidden="true"></div>
+      <div class="hero__inner wrap">
+        <p class="eyebrow hero__eyebrow" data-split>
+          <span>Fábrica de desarrollo</span><i></i><span>Asunción, PY</span><i></i><span>Est. 2026</span>
+        </p>
+        <h1 class="sr-only">Ardentium, fábrica de desarrollo de software</h1>
+        <!-- The molten wordmark is painted by WebGL inside this box -->
+        <div class="hero__mark" id="heroMark" aria-hidden="true">
+          <span class="hero__mark-fallback">ARDENTIUM</span>
+        </div>
+        <div class="hero__foot">
+          <div class="hero__copy">
+            <p class="hero__title" data-reveal>Forjamos software de&nbsp;<em>vanguardia</em>.</p>
+            <p class="hero__sub" data-reveal>Sistemas a medida, apps y automatización con IA. Los diseñamos, los construimos y los ponemos a trabajar en tu negocio.</p>
+          </div>
+          <div class="hero__actions" data-reveal>
+            <a class="btn btn--molten btn--lg" data-wa data-magnetic data-cursor="Escribir" href="https://wa.me/595000000000" target="_blank" rel="noopener">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wa" /></svg>
+              <span>Contanos tu proyecto</span>
+            </a>
+            <a class="btn btn--ghost btn--lg" href="#trabajos" data-magnetic>
+              <span>Ver trabajos</span>
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16m0 0-6-6m6 6 6-6" /></svg>
+            </a>
+          </div>
+        </div>
+        <div class="hero__meta">
+          <span class="hero__hint"><b class="dot"></b>Mové el cursor para calentar el metal · clic para martillar</span>
+          <span class="hero__readout">Colada N.º 001 · <b id="heroTemp">1538</b> °C</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MARQUEE ============ -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track" id="marquee">
+        <span>Vanguardia</span><b></b><span>Software a medida</span><b></b><span>SaaS</span><b></b><span>Apps de escritorio</span><b></b><span>Apps móviles</span><b></b><span>IA y automatización</span><b></b>
+      </div>
+    </div>
+
+    <!-- ============ EL NOMBRE ============ -->
+    <section class="name wrap" id="nombre" aria-labelledby="nombreTitle">
+      <div class="name__tile-wrap">
+        <div class="tile" id="tile" data-tilt>
+          <div class="tile__glare"></div>
+          <div class="tile__top"><span class="tile__z">2026</span><span class="tile__state">Incandescente</span></div>
+          <div class="tile__sym">Ad</div>
+          <div class="tile__name">Ardentium</div>
+          <div class="tile__foot"><span>ardens + -ium</span><span>1538 °C</span></div>
+        </div>
+        <p class="tile__caption">Elemento n.º 2026 · el año en que encendimos la forja</p>
+      </div>
+      <div class="name__text">
+        <h2 class="eyebrow" id="nombreTitle">El nombre</h2>
+        <p class="manifesto" id="manifesto">Ardentium viene del latín ardens: lo que arde. Le sumamos -ium, como a los elementos de la tabla periódica. Así nos vemos: un material nuevo, al rojo vivo, que toma la forma exacta de lo que tu negocio necesita.</p>
+        <p class="name__rule">Nacimos en 2026 con una regla simple: <strong>si no empuja el límite, no sale del horno.</strong></p>
+      </div>
+    </section>
+
+    <!-- ============ SERVICIOS ============ -->
+    <section class="services wrap" id="servicios" aria-labelledby="servTitle">
+      <header class="sec-head">
+        <p class="eyebrow">Servicios</p>
+        <h2 class="display" id="servTitle" data-forge>Lo que forjamos</h2>
+        <p class="sec-head__sub">Cuatro aleaciones, un mismo estándar: software que funciona desde el primer día y sigue mejorando.</p>
+      </header>
+      <div class="cards">
+        <article class="card" data-spot>
+          <svg class="card__ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M14 34h22a8 8 0 0 0 1-15.9A11 11 0 0 0 16 16a9 9 0 0 0-2 18Z"/><path d="M19 27h10M24 22v10"/></svg>
+          <h3 class="card__title">Software a medida y SaaS</h3>
+          <p>Plataformas web y sistemas en la nube que ordenan tu operación y crecen con vos.</p>
+          <ul class="alloy"><li>TypeScript</li><li>React</li><li>Node</li><li>PostgreSQL</li></ul>
+        </article>
+        <article class="card" data-spot>
+          <svg class="card__ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="9" width="36" height="24" rx="3"/><path d="M18 40h12M24 33v7"/><path d="M15 21l5 5 12-10"/></svg>
+          <h3 class="card__title">Apps de escritorio y offline</h3>
+          <p>Sistemas que siguen funcionando sin internet: imprimen, sincronizan y se respaldan solos.</p>
+          <ul class="alloy"><li>Tauri</li><li>Rust</li><li>SQLite</li><li>Sync</li></ul>
+        </article>
+        <article class="card" data-spot>
+          <svg class="card__ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="14" y="4" width="20" height="40" rx="4"/><path d="M21 38h6"/><path d="M19 16h10M19 22h7"/></svg>
+          <h3 class="card__title">Apps móviles</h3>
+          <p>Apps para iOS y Android con la calidad de producto que tu marca merece.</p>
+          <ul class="alloy"><li>iOS</li><li>Android</li><li>React Native</li></ul>
+        </article>
+        <article class="card" data-spot>
+          <svg class="card__ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4l3.5 12.5L40 20l-12.5 3.5L24 36l-3.5-12.5L8 20l12.5-3.5Z"/><path d="M38 32l1.5 4.5L44 38l-4.5 1.5L38 44l-1.5-4.5L32 38l4.5-1.5Z"/></svg>
+          <h3 class="card__title">IA y automatización</h3>
+          <p>Asistentes, bots e integraciones que eliminan tareas repetitivas y atienden por vos.</p>
+          <ul class="alloy"><li>Agentes</li><li>WhatsApp</li><li>APIs</li><li>Integraciones</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ TRABAJOS ============ -->
+    <section class="works" id="trabajos" aria-labelledby="worksTitle">
+      <header class="sec-head wrap">
+        <p class="eyebrow">Trabajos</p>
+        <h2 class="display" id="worksTitle" data-forge>Coladas recientes</h2>
+        <p class="sec-head__sub">Cada proyecto sale del horno con número de colada. Estas dos ya están en producción.</p>
+      </header>
+
+      <!-- KarúBox -->
+      <article class="case case--karu" id="karubox" aria-labelledby="karuTitle">
+        <div class="case__stick wrap">
+          <div class="case__info">
+            <p class="case__lot"><span>Colada N.º 001</span><span class="tag">Producto propio · SaaS</span></p>
+            <h3 class="case__name" id="karuTitle">KarúBox</h3>
+            <p class="case__claim">El POS que ordena la cocina.</p>
+            <p class="case__desc">Plataforma en la nube para lomiterías y restaurantes: punto de venta, inventario automático, puntos de fidelidad y reportes en tiempo real, todo en un solo lugar.</p>
+            <dl class="stats">
+              <div><dt>Horas ahorradas por día</dt><dd><span data-count="4">4</span><small>h</small></dd></div>
+              <div><dt>Implementación</dt><dd><span data-count="24">24</span><small>h</small></dd></div>
+              <div><dt>Prueba gratis</dt><dd><span data-count="30">30</span><small>días</small></dd></div>
+            </dl>
+            <blockquote class="quote">
+              <p>“KarúBox profesionalizó nuestro local de comidas rápidas y nos dio el orden para crecer.”</p>
+              <footer>Michel Brondell · Atlas Burguer</footer>
+            </blockquote>
+            <a class="btn btn--ghost" href="https://www.karubox.com.py/" target="_blank" rel="noopener" data-magnetic data-cursor="Visitar">
+              <span>karubox.com.py</span>
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" /></svg>
+            </a>
+          </div>
+
+          <!-- Coded, animated mock of the product flow: phone order → remote print → live dashboard -->
+          <div class="karu" id="karuStage" aria-hidden="true">
+            <div class="karu__phone">
+              <div class="kp__bar"><b>Mesa 4</b><span>Pedido</span></div>
+              <ul class="kp__items">
+                <li><span>Lomito completo</span><b>×2</b></li>
+                <li><span>Papas grandes</span><b>×1</b></li>
+                <li><span>Gaseosa 1 L</span><b>×1</b></li>
+              </ul>
+              <div class="kp__total"><span>Total</span><b>Gs. 98.000</b></div>
+              <div class="kp__send">Enviar a cocina</div>
+            </div>
+            <div class="karu__beam"><i></i><i></i><i></i></div>
+            <div class="karu__printer">
+              <div class="kpr__body"><span class="kpr__led"></span><span class="kpr__slot"></span></div>
+              <div class="kpr__paper" id="karuPaper">
+                <p class="kt__head">COCINA · #0417</p>
+                <p>2 × Lomito completo</p>
+                <p>1 × Papas grandes</p>
+                <p>1 × Gaseosa 1 L</p>
+                <p class="kt__cut">- - - - - - - - - - - -</p>
+                <p class="kt__foot">Mesa 4 · 21:42</p>
+              </div>
+            </div>
+            <div class="karu__dash">
+              <div class="kd__head"><span>Ventas de hoy</span><b>Gs. 3.412.000</b></div>
+              <svg class="kd__chart" viewBox="0 0 200 70" preserveAspectRatio="none">
+                <path class="kd__area" d="M0 62 L20 55 L40 58 L60 44 L80 47 L100 35 L120 38 L140 24 L160 28 L180 14 L200 9 L200 70 L0 70Z" />
+                <path class="kd__line" d="M0 62 L20 55 L40 58 L60 44 L80 47 L100 35 L120 38 L140 24 L160 28 L180 14 L200 9" pathLength="1" />
+              </svg>
+              <div class="kd__row"><span>Stock pan de lomito</span><b class="kd__stock"><i></i></b></div>
+              <div class="kd__row"><span>Puntos acumulados</span><b>+98</b></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- MotelApp -->
+      <article class="case case--motel" id="motelapp" aria-labelledby="motelTitle">
+        <div class="case__stick wrap">
+          <div class="case__info">
+            <p class="case__lot"><span>Colada N.º 002</span><span class="tag">Sistema de recepción · Escritorio</span></p>
+            <h3 class="case__name" id="motelTitle">MotelApp</h3>
+            <p class="case__claim">Un motel entero en tiempo real, con o sin internet.</p>
+            <p class="case__desc">App de escritorio para recepción y administración: tablero de habitaciones en vivo, cuentas con consumos, cobro, tickets térmicos y analítica del negocio. Opera sin conexión y sincroniza con la nube cuando vuelve.</p>
+            <ul class="specs">
+              <li><b>23</b><span>habitaciones en un tablero</span></li>
+              <li><b>5</b><span>estados en vivo</span></li>
+              <li><b>0</b><span>dependencia de internet para operar</span></li>
+              <li><b>1×</b><span>respaldo cifrado por día</span></li>
+            </ul>
+            <ul class="alloy"><li>Tauri 2</li><li>React</li><li>TypeScript</li><li>Rust</li><li>SQLite</li><li>Supabase</li><li>ESC/POS</li></ul>
+          </div>
+          <div class="screens" id="motelStage">
+            <figure class="screen screen--3" data-cursor="Análisis">
+              <img src="./assets/works/motelapp-analisis.webp" alt="Pantalla de análisis de MotelApp con ingresos día a día y estado de habitaciones" width="1600" height="1000" loading="lazy" decoding="async" />
+            </figure>
+            <figure class="screen screen--2" data-cursor="Cuenta">
+              <img src="./assets/works/motelapp-cuenta.webp" alt="Cuenta de una habitación ocupada en MotelApp con tienda de consumos y total" width="1600" height="1000" loading="lazy" decoding="async" />
+            </figure>
+            <figure class="screen screen--1" data-cursor="Tablero">
+              <img src="./assets/works/motelapp-tablero.webp" alt="Tablero de habitaciones de MotelApp con estados libre, ocupada, sucia, reservada y bloqueada" width="1600" height="1000" loading="lazy" decoding="async" />
+              <span class="screen__scan"></span>
+            </figure>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ============ PROCESO ============ -->
+    <section class="process wrap" id="proceso" aria-labelledby="procTitle">
+      <header class="sec-head">
+        <p class="eyebrow">Proceso</p>
+        <h2 class="display" id="procTitle" data-forge>Del mineral a la pieza</h2>
+        <p class="sec-head__sub">Cinco pasos, en este orden, en cada proyecto.</p>
+      </header>
+      <ol class="steps" id="steps">
+        <li class="step"><span class="step__n">01</span><div><h3>Fundir</h3><p>Escuchamos. Entendemos tu negocio, tus procesos y lo que hoy te frena.</p></div></li>
+        <li class="step"><span class="step__n">02</span><div><h3>Moldear</h3><p>Diseñamos la solución: flujos, pantallas y arquitectura, antes de escribir código.</p></div></li>
+        <li class="step"><span class="step__n">03</span><div><h3>Forjar</h3><p>Construimos en ciclos cortos, con avances que podés ver y probar.</p></div></li>
+        <li class="step"><span class="step__n">04</span><div><h3>Templar</h3><p>Probamos con casos reales hasta que el sistema aguanta el día a día.</p></div></li>
+        <li class="step"><span class="step__n">05</span><div><h3>Entregar</h3><p>Instalamos, capacitamos y acompañamos. Después, lo seguimos mejorando.</p></div></li>
+      </ol>
+    </section>
+
+    <!-- ============ CTA ============ -->
+    <section class="cta" id="contacto" aria-labelledby="ctaTitle">
+      <canvas class="cta__gl" id="forge2" aria-hidden="true"></canvas>
+      <div class="wrap cta__inner">
+        <p class="eyebrow">Contacto</p>
+        <h2 class="cta__title" id="ctaTitle" data-forge>¿Qué forjamos juntos?</h2>
+        <p class="cta__sub">Contanos tu idea por WhatsApp. Te respondemos rápido y sin vueltas.</p>
+        <a class="btn btn--molten btn--xl" data-wa data-magnetic data-cursor="Escribir" href="https://wa.me/595000000000" target="_blank" rel="noopener">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wa" /></svg>
+          <span>Escribinos por WhatsApp</span>
+        </a>
+        <p class="cta__num">WhatsApp <span data-wa-number>+595 000 000 000</span></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot wrap">
+    <div class="foot__brand">
+      <svg class="logo-mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#mark" /></svg>
+      <div><b>ARDENTIUM</b><span>Fábrica de desarrollo</span></div>
+    </div>
+    <p class="foot__motto">Vanguardia.</p>
+    <p class="foot__meta">Asunción, Paraguay · © <span id="year">2026</span> Ardentium</p>
+  </footer>
+
+  <a class="wa-float" data-wa data-cursor="WhatsApp" href="https://wa.me/595000000000" target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wa" /></svg>
+  </a>
+
+  <!-- ============ SVG sprite ============ -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="g-ingot" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#b3260e" /><stop offset=".35" stop-color="#ff6a1a" /><stop offset=".7" stop-color="#ffc36b" /><stop offset="1" stop-color="#fff5e0" />
+      </linearGradient>
+      <linearGradient id="g-steel" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff5e0" /><stop offset="1" stop-color="#c9b8a6" />
+      </linearGradient>
+      <linearGradient id="g-flame" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff5e0" /><stop offset=".5" stop-color="#ffc36b" /><stop offset="1" stop-color="#ff6a1a" />
+      </linearGradient>
+      <symbol id="mark" viewBox="0 0 100 100">
+        <path d="M44 17 L56 17 L95 95 L76 95 L50 43 L24 95 L5 95 Z" fill="url(#g-steel)" />
+        <rect x="26" y="63" width="48" height="13" rx="2.5" fill="#0b0908" />
+        <rect class="mark-ingot" x="29" y="66" width="42" height="7" rx="1.8" fill="url(#g-ingot)" />
+        <path class="mark-flame" d="M50 0 C54.5 5 56 9.5 50 14 C44 9.5 45.5 5 50 0Z" fill="url(#g-flame)" />
+      </symbol>
+      <symbol id="i-wa" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.9-4.45 9.9-9.91A9.86 9.86 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.23 8.23 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24a8.2 8.2 0 0 1 8.24 8.25c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.43-.06-.13-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.29Z" />
+      </symbol>
+    </defs>
+  </svg>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
