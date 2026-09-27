@@ -17,12 +17,52 @@ npm run build     # genera la carpeta dist/ lista para subir
 npm run preview   # prueba el build localmente
 ```
 
-La carpeta `dist/` se puede subir tal cual a Vercel, Netlify, Cloudflare Pages o cualquier hosting
+La carpeta `dist/` se puede subir tal cual a Vercel, Netlify, Cloudflare o cualquier hosting
 estático (las rutas son relativas, funciona también dentro de una subcarpeta).
+
+## Publicar en Cloudflare (Workers)
+
+El repo ya trae `wrangler.jsonc`, que le dice a Cloudflare que sirva la carpeta `dist/`.
+En el panel de Cloudflare (Workers → importar repositorio de GitHub):
+
+| Campo           | Valor                |
+|-----------------|----------------------|
+| Project name    | `ardentiumlanding` (igual al `name` de `wrangler.jsonc`) |
+| Build command   | `npm run build`      |
+| Deploy command  | `npx wrangler deploy` |
+
+Cada `git push` a `main` vuelve a publicar el sitio. Si cambiás el nombre del proyecto en
+Cloudflare, cambiá también `name` en `wrangler.jsonc`, o el build falla.
+Desde tu PC también podés publicar con `npm run deploy` (pide iniciar sesión en Cloudflare).
+
+## SEO
+
+Ya viene configurado:
+
+- `<title>` y descripción con las palabras clave del negocio, un solo `h1` visible y encabezados ordenados.
+- Imagen para compartir en WhatsApp, Facebook, LinkedIn y X (`public/og.jpg`, 1200 × 630), con sus
+  etiquetas Open Graph y Twitter.
+- Datos estructurados (schema.org): organización, fundadores, servicios, KarúBox, MotelApp y las
+  preguntas frecuentes.
+- Sección de preguntas frecuentes con contenido que responde búsquedas reales.
+- `robots.txt`, `sitemap.xml` y `llms.txt` (para buscadores con IA) que se generan en cada build.
+- Íconos para iPhone y Android, `favicon.ico` y `site.webmanifest`.
+- `public/_headers`: caché larga para los archivos del build y cabeceras de seguridad en Cloudflare.
+
+**Importante:** cuando tengan el dominio definitivo, ponelo en `siteUrl` dentro de `src/config.js`
+(por ejemplo `"https://ardentium.com.py"`). Con eso se completan la URL canónica, la imagen al compartir
+y el sitemap. También se puede definir como variable de entorno `SITE_URL` en Cloudflare.
+
+Después de publicar:
+1. Dar de alta el sitio en [Google Search Console](https://search.google.com/search-console) y enviar
+   `https://TU-DOMINIO/sitemap.xml`.
+2. Crear el perfil de empresa en Google (Google Business Profile) con la dirección en Asunción.
+3. Probar la vista previa al compartir con el [depurador de Facebook](https://developers.facebook.com/tools/debug/)
+   y los datos estructurados con la [prueba de resultados enriquecidos](https://search.google.com/test/rich-results).
 
 ## Lo primero que tenés que cambiar
 
-**Número de WhatsApp** → `src/config.js`
+**Número de WhatsApp y dominio** → `src/config.js`
 
 ```js
 whatsapp: "595981123456",            // solo dígitos, con 595 y sin el 0 inicial
@@ -35,6 +75,9 @@ Todos los botones de contacto y el número visible en la sección *Contacto* se 
 
 ```
 index.html              contenido y estructura de la página
+public/                 se copia tal cual al build: og.jpg, íconos, manifest, _headers
+scripts/
+  vite-plugin-seo.js    completa las URLs de SEO y genera robots.txt, sitemap.xml y llms.txt
 assets/
   favicon.svg           logo (monograma A forjada)
   works/                capturas reales de MotelApp (sin logo del cliente)

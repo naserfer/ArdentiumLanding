@@ -123,7 +123,7 @@ onTick((s) => {
 /* ---------- intro ---------- */
 runPreloader().then(() => {
   heroItems.forEach((el, i) => {
-    el.style.setProperty("--d", `${0.35 + i * 0.09}s`);
+    el.style.setProperty("--d", `${0.15 + i * 0.07}s`);
     el.classList.add("is-in");
     el.classList.remove("is-pending");
     setTimeout(() => el.classList.remove("is-in"), 1600 + i * 90);

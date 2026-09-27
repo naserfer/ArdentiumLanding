@@ -6,6 +6,10 @@
  * Ejemplo: 0981 123 456  →  "595981123456"
  */
 export const CONFIG = {
+  // Dirección pública del sitio, sin barra final. Se usa para SEO: URL canónica, imagen al
+  // compartir en redes, sitemap.xml y datos estructurados. Ej.: "https://ardentium.com.py"
+  // (también se puede definir con la variable de entorno SITE_URL al hacer el build).
+  siteUrl: "",
   whatsapp: "595000000000",
   whatsappMessage: "Hola Ardentium, quiero contarles sobre un proyecto.",
 };

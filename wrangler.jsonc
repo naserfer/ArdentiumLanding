@@ -1,0 +1,10 @@
+// Cloudflare Workers: sitio estático servido desde el build de Vite.
+// "name" tiene que ser igual al nombre del proyecto en Cloudflare (Project name).
+{
+  "name": "ardentiumlanding",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}

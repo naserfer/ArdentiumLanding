@@ -17,12 +17,12 @@ export function runPreloader() {
 
   let seen = false;
   try { seen = sessionStorage.getItem("ard-intro") === "1"; sessionStorage.setItem("ard-intro", "1"); } catch (_) { /* storage blocked */ }
-  const DUR = seen ? 700 : 1900;
+  const DUR = seen ? 600 : 1350;
   if (seen) loader.classList.add("is-quick");
 
   const temp = document.getElementById("loaderTemp");
   const bar = document.getElementById("loaderBar");
-  const fonts = document.fonts ? Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 2500))]) : Promise.resolve();
+  const fonts = document.fonts ? Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1600))]) : Promise.resolve();
 
   return new Promise((resolve) => {
     const start = performance.now();
@@ -40,7 +40,7 @@ export function runPreloader() {
         html.classList.remove("is-loading");
         resolve();
         setTimeout(() => { loader.hidden = true; }, 1200);
-      }, 520);
+      }, 420);
     };
     requestAnimationFrame(step);
   });

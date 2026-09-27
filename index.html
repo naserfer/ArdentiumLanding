@@ -3,14 +3,306 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Ardentium</title>
-  <meta name="description" content="Ardentium es una fábrica de desarrollo en Asunción, Paraguay. Forjamos software a medida, SaaS, apps de escritorio y móviles, e IA aplicada. Vanguardia." />
+  <title>Ardentium | Desarrollo de software a medida en Paraguay</title>
+  <meta name="description" content="Fábrica de desarrollo de software en Asunción, Paraguay. Software a medida, SaaS, apps de escritorio y móviles, e IA aplicada. Hablemos por WhatsApp." />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="author" content="Ardentium" />
   <meta name="theme-color" content="#0b0908" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="geo.region" content="PY-ASU" />
+  <meta name="geo.placename" content="Asunción" />
+  <link rel="canonical" href="%SITE_URL%/" />
+
+  <!-- Open Graph (WhatsApp, Facebook, LinkedIn) -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Ardentium · Fábrica de desarrollo" />
-  <meta property="og:description" content="Forjamos software de vanguardia: sistemas a medida, apps y automatización con IA. Asunción, Paraguay." />
+  <meta property="og:site_name" content="Ardentium" />
   <meta property="og:locale" content="es_PY" />
+  <meta property="og:url" content="%SITE_URL%/" />
+  <meta property="og:title" content="Ardentium · Desarrollo de software a medida en Paraguay" />
+  <meta property="og:description" content="Desarrollo de software a medida, apps e IA de vanguardia. Fábrica de desarrollo en Asunción, Paraguay." />
+  <meta property="og:image" content="%SITE_URL%/og.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Ardentium, desarrollo de software a medida, apps e IA de vanguardia. Asunción, Paraguay." />
+  <!-- X / Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Ardentium · Desarrollo de software a medida en Paraguay" />
+  <meta name="twitter:description" content="Desarrollo de software a medida, apps e IA de vanguardia. Fábrica de desarrollo en Asunción, Paraguay." />
+  <meta name="twitter:image" content="%SITE_URL%/og.jpg" />
+  <meta name="twitter:image:alt" content="Ardentium, desarrollo de software a medida, apps e IA de vanguardia." />
+
+  <!-- Iconos -->
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+  <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- Datos estructurados (schema.org) -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "%SITE_URL%/#organizacion",
+          "name": "Ardentium",
+          "alternateName": "Ardentium Fábrica de Desarrollo",
+          "url": "%SITE_URL%/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "%SITE_URL%/icon-512.png",
+            "width": 512,
+            "height": 512
+          },
+          "image": "%SITE_URL%/og.jpg",
+          "description": "Fábrica de desarrollo de software en Asunción, Paraguay: software a medida, SaaS, apps de escritorio y móviles, e IA aplicada.",
+          "slogan": "Vanguardia",
+          "foundingDate": "2026",
+          "founder": [
+            {
+              "@type": "Person",
+              "@id": "%SITE_URL%/#naser-fernandez",
+              "name": "Naser Fernández",
+              "jobTitle": "Cofundador",
+              "worksFor": {
+                "@id": "%SITE_URL%/#organizacion"
+              }
+            },
+            {
+              "@type": "Person",
+              "@id": "%SITE_URL%/#ivan-ortiz",
+              "name": "Iván Ortiz",
+              "jobTitle": "Cofundador",
+              "worksFor": {
+                "@id": "%SITE_URL%/#organizacion"
+              }
+            }
+          ],
+          "numberOfEmployees": {
+            "@type": "QuantitativeValue",
+            "value": 2
+          },
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Asunción",
+            "addressRegion": "Asunción",
+            "addressCountry": "PY"
+          },
+          "areaServed": [
+            {
+              "@type": "Country",
+              "name": "Paraguay"
+            },
+            {
+              "@type": "Place",
+              "name": "Latinoamérica"
+            }
+          ],
+          "knowsAbout": [
+            "Desarrollo de software a medida",
+            "SaaS",
+            "Aplicaciones de escritorio",
+            "Aplicaciones móviles",
+            "Inteligencia artificial",
+            "Automatización de procesos",
+            "Sistemas punto de venta (POS)",
+            "Sistemas offline con sincronización",
+            "TypeScript",
+            "React",
+            "Rust",
+            "Tauri",
+            "SQLite",
+            "PostgreSQL"
+          ],
+          "contactPoint": [],
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Servicios de desarrollo de software",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Software a medida y SaaS",
+                  "serviceType": "Desarrollo de software a medida",
+                  "description": "Plataformas web y sistemas en la nube que ordenan la operación de tu negocio.",
+                  "areaServed": {
+                    "@type": "Country",
+                    "name": "Paraguay"
+                  },
+                  "provider": {
+                    "@id": "%SITE_URL%/#organizacion"
+                  }
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Apps de escritorio y offline",
+                  "serviceType": "Desarrollo de aplicaciones de escritorio",
+                  "description": "Sistemas que funcionan sin internet: imprimen, sincronizan y se respaldan solos.",
+                  "areaServed": {
+                    "@type": "Country",
+                    "name": "Paraguay"
+                  },
+                  "provider": {
+                    "@id": "%SITE_URL%/#organizacion"
+                  }
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Apps móviles",
+                  "serviceType": "Desarrollo de aplicaciones móviles",
+                  "description": "Apps para iOS y Android.",
+                  "areaServed": {
+                    "@type": "Country",
+                    "name": "Paraguay"
+                  },
+                  "provider": {
+                    "@id": "%SITE_URL%/#organizacion"
+                  }
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "IA y automatización",
+                  "serviceType": "Inteligencia artificial y automatización de procesos",
+                  "description": "Asistentes, bots e integraciones que eliminan tareas repetitivas.",
+                  "areaServed": {
+                    "@type": "Country",
+                    "name": "Paraguay"
+                  },
+                  "provider": {
+                    "@id": "%SITE_URL%/#organizacion"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "%SITE_URL%/#sitio",
+          "url": "%SITE_URL%/",
+          "name": "Ardentium",
+          "inLanguage": "es-PY",
+          "publisher": {
+            "@id": "%SITE_URL%/#organizacion"
+          }
+        },
+        {
+          "@type": "WebPage",
+          "@id": "%SITE_URL%/#pagina",
+          "url": "%SITE_URL%/",
+          "name": "Ardentium | Desarrollo de software a medida en Paraguay",
+          "description": "Fábrica de desarrollo de software en Asunción, Paraguay. Software a medida, SaaS, apps de escritorio y móviles, e IA aplicada. Hablemos por WhatsApp.",
+          "inLanguage": "es-PY",
+          "isPartOf": {
+            "@id": "%SITE_URL%/#sitio"
+          },
+          "about": {
+            "@id": "%SITE_URL%/#organizacion"
+          },
+          "primaryImageOfPage": {
+            "@type": "ImageObject",
+            "url": "%SITE_URL%/og.jpg",
+            "width": 1200,
+            "height": 630
+          }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "%SITE_URL%/#karubox",
+          "name": "KarúBox",
+          "url": "https://www.karubox.com.py/",
+          "applicationCategory": "BusinessApplication",
+          "applicationSubCategory": "Punto de venta (POS)",
+          "operatingSystem": "Web",
+          "description": "POS en la nube para lomiterías y restaurantes: punto de venta, inventario automático, puntos de fidelidad, impresión remota y reportes en tiempo real.",
+          "publisher": {
+            "@id": "%SITE_URL%/#organizacion"
+          },
+          "creator": {
+            "@id": "%SITE_URL%/#organizacion"
+          }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "%SITE_URL%/#motelapp",
+          "name": "MotelApp",
+          "applicationCategory": "BusinessApplication",
+          "applicationSubCategory": "Gestión hotelera",
+          "operatingSystem": "Windows",
+          "description": "Sistema de escritorio para recepción y administración de moteles: tablero de habitaciones en vivo, cuentas, cobro, tickets térmicos y analítica. Opera sin internet y sincroniza con la nube.",
+              "creator": {
+            "@id": "%SITE_URL%/#organizacion"
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "%SITE_URL%/#preguntas",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "¿Qué tipo de software desarrollan?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Software a medida y plataformas SaaS, apps de escritorio que funcionan sin internet, apps móviles para iOS y Android, y automatizaciones con inteligencia artificial. KarúBox y MotelApp son dos ejemplos que ya están en producción."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "¿Cuánto cuesta desarrollar un sistema a medida?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Depende del alcance. Después de una primera charla te enviamos una propuesta por escrito con qué incluye, en qué plazos y a qué costo, para que decidas con toda la información."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "¿Cuánto tiempo lleva un proyecto?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Depende de su tamaño. Trabajamos en etapas cortas, así ves avances reales durante el proyecto en lugar de esperar hasta el final para probar algo."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "¿El sistema puede funcionar sin internet?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Sí. Construimos sistemas que operan de forma local y sincronizan con la nube cuando vuelve la conexión, como MotelApp, que sigue cobrando e imprimiendo tickets aunque se corte internet."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "¿Qué pasa después de la entrega?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Te acompañamos en la puesta en marcha y ofrecemos planes de mantenimiento con soporte, corrección de errores y mejoras continuas."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "¿Trabajan solo en Asunción?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Estamos en Asunción, Paraguay, y trabajamos de forma presencial o remota, según lo que necesite cada proyecto."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anybody:ital,wdth,wght@0,50..150,100..900;1,50..150,100..900&family=Instrument+Sans:wdth,wght@75..100,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap" />
@@ -65,6 +357,7 @@
       <a href="#servicios" data-scramble>Servicios</a>
       <a href="#trabajos" data-scramble>Trabajos</a>
       <a href="#proceso" data-scramble>Proceso</a>
+      <a href="#equipo" data-scramble>Equipo</a>
       <a href="#contacto" data-scramble>Contacto</a>
     </nav>
     <a class="btn btn--molten nav__cta" data-wa data-magnetic href="https://wa.me/595000000000" target="_blank" rel="noopener">
@@ -83,15 +376,14 @@
         <p class="eyebrow hero__eyebrow" data-split>
           <span>Fábrica de desarrollo</span><span>Asunción, PY</span><span>Est. 2026</span>
         </p>
-        <h1 class="sr-only">Ardentium, fábrica de desarrollo de software</h1>
         <!-- The molten wordmark is painted by WebGL inside this box -->
         <div class="hero__mark" id="heroMark" aria-hidden="true">
           <span class="hero__mark-fallback">ARDENTIUM</span>
         </div>
         <div class="hero__foot">
           <div class="hero__copy">
-            <p class="hero__title" data-reveal>Forjamos software de&nbsp;<em>vanguardia</em>.</p>
-            <p class="hero__sub" data-reveal>Sistemas a medida, apps y automatización con IA. Los diseñamos, los construimos y los ponemos a trabajar en tu negocio.</p>
+            <h1 class="hero__title" data-reveal><span class="sr-only">Ardentium: </span>Forjamos software de&nbsp;<em>vanguardia</em>.</h1>
+            <p class="hero__sub" data-reveal>Desarrollo de software a medida, apps y automatización con IA en Paraguay. Lo diseñamos, lo construimos y lo ponemos a trabajar en tu negocio.</p>
           </div>
           <div class="hero__actions" data-reveal>
             <a class="btn btn--molten btn--lg" data-wa data-magnetic data-cursor="Escribir" href="https://wa.me/595000000000" target="_blank" rel="noopener">
@@ -145,7 +437,7 @@
       <header class="sec-head">
         <p class="eyebrow">Servicios</p>
         <h2 class="display" id="servTitle" data-forge>Lo que forjamos</h2>
-        <p class="sec-head__sub">Cuatro aleaciones, un mismo estándar: software que funciona desde el primer día y sigue mejorando.</p>
+        <p class="sec-head__sub">Desarrollo de software a medida en cuatro aleaciones, con un mismo estándar: que funcione desde el primer día y siga mejorando.</p>
       </header>
       <div class="cards">
         <article class="card" data-spot>
@@ -184,7 +476,7 @@
       <header class="sec-head wrap">
         <p class="eyebrow">Trabajos</p>
         <h2 class="display" id="worksTitle" data-forge>Coladas recientes</h2>
-        <p class="sec-head__sub">Cada proyecto sale del horno con número de colada. Estas dos ya están en producción.</p>
+        <p class="sec-head__sub">Software hecho en Paraguay que ya está en producción. Cada proyecto sale del horno con su número de colada.</p>
       </header>
 
       <!-- KarúBox -->
@@ -311,6 +603,80 @@
       </ol>
     </section>
 
+    <!-- ============ EQUIPO ============ -->
+    <section class="team wrap" id="equipo" aria-labelledby="teamTitle">
+      <header class="sec-head">
+        <p class="eyebrow">Equipo</p>
+        <h2 class="display" id="teamTitle" data-forge>Quiénes forjan</h2>
+        <p class="sec-head__sub">La empresa nació en 2026. La experiencia viene de antes: entre los dos sumamos más de 10 años en el mundo del software.</p>
+      </header>
+      <div class="founders">
+        <article class="founder" aria-label="Naser Fernández, cofundador">
+          <div class="tile tile--person" data-tilt>
+            <div class="tile__glare"></div>
+            <div class="tile__top"><span class="tile__z">Cofundador</span><span class="tile__state">Est. 2026</span></div>
+            <div class="tile__sym" aria-hidden="true">Nf</div>
+            <h3 class="tile__name">Naser Fernández</h3>
+            <div class="tile__foot"><span>Ardentium</span><span>Asunción, PY</span></div>
+          </div>
+        </article>
+        <article class="founder" aria-label="Iván Ortiz, cofundador">
+          <div class="tile tile--person" data-tilt>
+            <div class="tile__glare"></div>
+            <div class="tile__top"><span class="tile__z">Cofundador</span><span class="tile__state">Est. 2026</span></div>
+            <div class="tile__sym" aria-hidden="true">Io</div>
+            <h3 class="tile__name">Iván Ortiz</h3>
+            <div class="tile__foot"><span>Ardentium</span><span>Asunción, PY</span></div>
+          </div>
+        </article>
+        <aside class="team__stat" aria-label="Experiencia">
+          <p class="team__kicker">Entre los dos</p>
+          <p class="team__num"><span class="team__plus">+</span><span data-count="10">10</span></p>
+          <p class="team__label">años en el mundo del software</p>
+          <p class="team__note">Hablás directamente con quienes diseñan y construyen tu sistema.</p>
+          <a class="btn btn--ghost" data-wa data-magnetic data-cursor="Escribir" href="https://wa.me/595000000000" target="_blank" rel="noopener">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wa" /></svg>
+            <span>Hablá con nosotros</span>
+          </a>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ PREGUNTAS FRECUENTES ============ -->
+    <section class="faq wrap" id="preguntas" aria-labelledby="faqTitle">
+      <header class="sec-head">
+        <p class="eyebrow">Preguntas frecuentes</p>
+        <h2 class="display" id="faqTitle" data-forge>Antes de encender el horno</h2>
+        <p class="sec-head__sub">Lo que más nos preguntan sobre desarrollo de software a medida en Paraguay.</p>
+      </header>
+      <div class="faq__list">
+        <details class="faq__item" name="faq" open>
+          <summary><h3>¿Qué tipo de software desarrollan?</h3><span class="faq__icon" aria-hidden="true"></span></summary>
+          <div class="faq__a"><p>Software a medida y plataformas SaaS, apps de escritorio que funcionan sin internet, apps móviles para iOS y Android, y automatizaciones con inteligencia artificial. KarúBox y MotelApp son dos ejemplos que ya están en producción.</p></div>
+        </details>
+        <details class="faq__item" name="faq">
+          <summary><h3>¿Cuánto cuesta desarrollar un sistema a medida?</h3><span class="faq__icon" aria-hidden="true"></span></summary>
+          <div class="faq__a"><p>Depende del alcance. Después de una primera charla te enviamos una propuesta por escrito con qué incluye, en qué plazos y a qué costo, para que decidas con toda la información.</p></div>
+        </details>
+        <details class="faq__item" name="faq">
+          <summary><h3>¿Cuánto tiempo lleva un proyecto?</h3><span class="faq__icon" aria-hidden="true"></span></summary>
+          <div class="faq__a"><p>Depende de su tamaño. Trabajamos en etapas cortas, así ves avances reales durante el proyecto en lugar de esperar hasta el final para probar algo.</p></div>
+        </details>
+        <details class="faq__item" name="faq">
+          <summary><h3>¿El sistema puede funcionar sin internet?</h3><span class="faq__icon" aria-hidden="true"></span></summary>
+          <div class="faq__a"><p>Sí. Construimos sistemas que operan de forma local y sincronizan con la nube cuando vuelve la conexión, como MotelApp, que sigue cobrando e imprimiendo tickets aunque se corte internet.</p></div>
+        </details>
+        <details class="faq__item" name="faq">
+          <summary><h3>¿Qué pasa después de la entrega?</h3><span class="faq__icon" aria-hidden="true"></span></summary>
+          <div class="faq__a"><p>Te acompañamos en la puesta en marcha y ofrecemos planes de mantenimiento con soporte, corrección de errores y mejoras continuas.</p></div>
+        </details>
+        <details class="faq__item" name="faq">
+          <summary><h3>¿Trabajan solo en Asunción?</h3><span class="faq__icon" aria-hidden="true"></span></summary>
+          <div class="faq__a"><p>Estamos en Asunción, Paraguay, y trabajamos de forma presencial o remota, según lo que necesite cada proyecto.</p></div>
+        </details>
+      </div>
+    </section>
+
     <!-- ============ CTA ============ -->
     <section class="cta" id="contacto" aria-labelledby="ctaTitle">
       <canvas class="cta__gl" id="forge2" aria-hidden="true"></canvas>
@@ -334,12 +700,15 @@
           <svg class="brand__a" viewBox="0 0 100 100" aria-hidden="true"><use href="#mark" /></svg><span class="brand__rest" aria-hidden="true">RDENTIUM</span>
         </a>
         <p class="foot__lead">Fábrica de desarrollo en Asunción, Paraguay. Software a medida, apps e IA aplicada.</p>
+        <p class="foot__founders">Fundada por Naser Fernández e Iván Ortiz.</p>
       </div>
       <nav class="foot__nav" aria-label="Pie de página">
         <p class="foot__label">Mapa</p>
         <a href="#servicios">Servicios</a>
         <a href="#trabajos">Trabajos</a>
         <a href="#proceso">Proceso</a>
+        <a href="#equipo">Equipo</a>
+        <a href="#preguntas">Preguntas frecuentes</a>
         <a href="#contacto">Contacto</a>
       </nav>
       <div class="foot__nav">

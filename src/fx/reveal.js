@@ -15,6 +15,9 @@ const AUTO = [
   ".karu",
   ".screens",
   ".step",
+  ".founder",
+  ".team__stat",
+  ".faq__item",
   ".cta__inner > *:not([data-forge])",
   ".foot > *",
 ];
