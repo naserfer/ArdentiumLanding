@@ -816,7 +816,7 @@ section { position: relative; }
   .karu__beam { display: none; }
 }
 
-/* ---------- MotelApp screens (driven by --p from JS; default = fanned) ---------- */
+/* ---------- Case screens: MotelApp, Sabor del Chipá (driven by --p from JS; default = fanned) ---------- */
 .screens {
   --p: 1;
   position: relative;
@@ -1074,7 +1074,7 @@ html.has-cursor .faq__item summary { cursor: none; }
 .foot__top:hover { color: var(--gold); }
 
 /* =====================================================================
-   LIGHTBOX (MotelApp captures)
+   LIGHTBOX (case captures)
    ===================================================================== */
 .lightbox {
   width: min(1400px, 94vw); max-width: none; max-height: none;

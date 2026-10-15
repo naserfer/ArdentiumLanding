@@ -42,7 +42,7 @@ Ya viene configurado:
 - `<title>` y descripción con las palabras clave del negocio, un solo `h1` visible y encabezados ordenados.
 - Imagen para compartir en WhatsApp, Facebook, LinkedIn y X (`public/og.jpg`, 1200 × 630), con sus
   etiquetas Open Graph y Twitter.
-- Datos estructurados (schema.org): organización, fundadores, servicios, KarúBox, MotelApp y las
+- Datos estructurados (schema.org): organización, fundadores, servicios, KarúBox, MotelApp, Sabor del Chipá y las
   preguntas frecuentes.
 - Sección de preguntas frecuentes con contenido que responde búsquedas reales.
 - `robots.txt`, `sitemap.xml` y `llms.txt` (para buscadores con IA) que se generan en cada build.
@@ -80,7 +80,7 @@ scripts/
   vite-plugin-seo.js    completa las URLs de SEO y genera robots.txt, sitemap.xml y llms.txt
 assets/
   favicon.svg           logo (monograma A forjada)
-  works/                capturas reales de MotelApp (sin logo del cliente)
+  works/                capturas reales de MotelApp (sin logo del cliente) y Sabor del Chipá
 src/
   config.js             WhatsApp y mensaje
   main.js               arma todo y corre el loop de animación
@@ -93,7 +93,7 @@ src/
     reveal.js           entradas al hacer scroll y títulos "martillados"
     interact.js         botones magnéticos, tilt 3D, spotlight, contadores
     cursor.js           cursor de brasa
-    lightbox.js         ampliar capturas de MotelApp
+    lightbox.js         ampliar capturas de MotelApp y Sabor del Chipá
     footer.js           wordmark gigante del pie que se funde bajo el cursor
     ticker.js           loop único + estado compartido de scroll y mouse
 ```
@@ -114,7 +114,7 @@ src/
 - **Servicios:** punto de calor que sigue al cursor; en el celular se encienden al pasar por el centro.
 - **KarúBox:** pedido → impresión remota (el ticket sale de la impresora, el LED parpadea) →
   ventas que suben en vivo, con pasos 1‑2‑3 sincronizados con el scroll.
-- **MotelApp:** capturas reales que se despliegan en 3D, láser de escaneo y clic para ampliar.
+- **MotelApp** y **Sabor del Chipá:** capturas reales que se despliegan en 3D, láser de escaneo y clic para ampliar.
 - **Proceso:** riel de metal fundido que se llena y enciende cada paso.
 - **Contacto:** la lava del fondo se calienta a medida que te acercás.
 - **Pie:** wordmark gigante en contorno que se funde donde pasa el cursor.

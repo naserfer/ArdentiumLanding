@@ -137,17 +137,20 @@ export function initScrollFx() {
     });
   }
 
-  /* ---------- MotelApp: screens rise from a tilted stack and fan out ---------- */
-  const motelCase = $("#motelapp"), motel = $("#motelStage");
-  if (motel && !state.reduced) {
-    const front = motel.querySelector(".screen--1");
-    const setScan = () => motel.style.setProperty("--scan-h", `${front.offsetHeight}px`);
-    new ResizeObserver(setScan).observe(front);
-    updaters.push((s) => {
-      const r = motelCase.getBoundingClientRect();
-      if (r.bottom < 0 || r.top > s.vh) return;
-      const p = easeInOut(caseProgress(motelCase, motel, s));
-      motel.style.setProperty("--p", p.toFixed(4));
+  /* ---------- screen cases (MotelApp, Sabor del Chipá): captures rise from a tilted stack and fan out ---------- */
+  if (!state.reduced) {
+    document.querySelectorAll(".case .screens").forEach((stage) => {
+      const caseEl = stage.closest(".case");
+      const front = stage.querySelector(".screen--1");
+      if (!caseEl || !front) return;
+      const setScan = () => stage.style.setProperty("--scan-h", `${front.offsetHeight}px`);
+      new ResizeObserver(setScan).observe(front);
+      updaters.push((s) => {
+        const r = caseEl.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > s.vh) return;
+        const p = easeInOut(caseProgress(caseEl, stage, s));
+        stage.style.setProperty("--p", p.toFixed(4));
+      });
     });
   }
 

@@ -66,6 +66,7 @@ export function extraFiles(ctx, date = new Date()) {
 ## Trabajos
 - KarúBox (producto propio): POS en la nube para lomiterías y restaurantes, con inventario automático, puntos de fidelidad, impresión remota y reportes en tiempo real. https://www.karubox.com.py/
 - MotelApp: sistema de escritorio para recepción y administración de moteles, con tablero de habitaciones en vivo, cobro, tickets térmicos y analítica; opera sin internet y sincroniza con la nube.
+- Sabor del Chipá: tienda online de chipá artesanal congelado en Buenos Aires, con catálogo de variedades, carrito que envía el pedido por WhatsApp y panel para actualizar precios y stock. https://sabordelchipa.vercel.app/
 
 ## Contacto
 - Sitio: ${base || "(sin dominio configurado)"}/

@@ -1,5 +1,5 @@
 /**
- * LIGHTBOX — click a MotelApp capture to see it full size.
+ * LIGHTBOX — click a case capture (MotelApp, Sabor del Chipá) to see it full size.
  * Built on <dialog>: focus is trapped and Esc closes it natively.
  */
 export function initLightbox() {
@@ -26,7 +26,8 @@ export function initLightbox() {
       opener = btn;
       img.src = src.currentSrc || src.src;
       img.alt = src.alt;
-      cap.textContent = `MotelApp · ${tag ? tag.textContent : ""}`;
+      const name = btn.closest(".case")?.querySelector(".case__name")?.textContent.trim() || "";
+      cap.textContent = [name, tag ? tag.textContent : ""].filter(Boolean).join(" · ");
       html.classList.add("lb-open");
       dlg.showModal();
     });
