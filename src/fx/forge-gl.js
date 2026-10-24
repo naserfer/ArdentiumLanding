@@ -159,7 +159,7 @@ void main() {
 }
 `;
 
-const UNIFORMS = ["uRes", "uTime", "uMouse", "uHeat", "uStrike", "uText", "uTextOn", "uIgnite", "uCold", "uBase", "uScroll", "uTC", "uSq", "uTexel", "uPar", "uOct"];
+const UNIFORMS = ["uRes", "uTime", "uBgT", "uMouse", "uHeat", "uStrike", "uText", "uTextOn", "uIgnite", "uCold", "uBase", "uScroll", "uTC", "uSq", "uTexel", "uPar", "uOct"];
 
 export class Forge {
   /**
@@ -169,14 +169,16 @@ export class Forge {
    *   in the GPU process, so what is needed first must be compiled first.
    *   "near": don't even create the context until the canvas comes within a screen of the viewport
    *   (a WebGL context costs ~100–300 ms of main thread while the page boots).
+   * frag: fragment shader (default: the molten field); quality: render scale;
+   * wander: false keeps the light still (and cold) when nobody points.
    */
   constructor(canvas, opts = {}) {
     this.canvas = canvas;
-    this.opts = { base: 1, interactive: true, ...opts };
+    this.opts = { base: 1, interactive: true, wander: true, ...opts };
     this.ok = false;
     this.ready = false;                 // the program finished compiling
     this.visible = false;
-    this.quality = state.mobile ? 0.5 : 0.72;
+    this.quality = opts.quality || (state.mobile ? 0.5 : 0.72);
     this.frameTimes = [];
     this.heat = 0.35;
     this.heatTarget = 0.35;
@@ -220,7 +222,7 @@ export class Forge {
 
   /** Starts compiling the field program (no‑op if it already is). */
   compile() {
-    if (this.gl && !this.prog) this.prog = this.makeProgram(VERT, FIELD_FRAG);
+    if (this.gl && !this.prog) this.prog = this.makeProgram(VERT, this.opts.frag || FIELD_FRAG);
   }
 
   /**
@@ -409,7 +411,7 @@ export class Forge {
     const { gl, u } = this;
 
     // ambient wandering heat when nobody is pointing (touch, idle)
-    if (!this.hasPointer || state.reduced) {
+    if ((!this.hasPointer || state.reduced) && this.opts.wander) {
       const W = this.canvas.width, H = this.canvas.height;
       this.tx = W * (0.5 + 0.3 * Math.sin(s.time * 0.35));
       this.ty = H * (0.45 + 0.2 * Math.sin(s.time * 0.5 + 1.3));
@@ -434,8 +436,10 @@ export class Forge {
       gl.disable(gl.BLEND);
       gl.uniform2f(u.uRes, this.canvas.width, this.canvas.height);
       gl.uniform1f(u.uTime, s.time + 40);
+      // touch: the ground holds still (nothing full‑screen moves by itself)
+      gl.uniform1f(u.uBgT, state.pointerFine && !state.reduced ? s.time + 40 : 47);
       gl.uniform2f(u.uMouse, this.mx, this.my);
-      gl.uniform1f(u.uHeat, this.heat);
+      gl.uniform1f(u.uHeat, this.hasPointer || this.opts.wander ? this.heat : 0);
       gl.uniform4f(u.uStrike, this.strike.x, this.strike.y, this.strike.age, this.strike.age < 3 ? this.strike.power : 0);
       gl.uniform1f(u.uTextOn, this.textReady ? 1 : 0);
       gl.uniform1f(u.uIgnite, this.ignite);

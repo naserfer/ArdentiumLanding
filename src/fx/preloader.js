@@ -329,7 +329,7 @@ export function runPreloader({ forge, sparks } = {}) {
 
   /** the hero wordmark, with the real face if it has arrived (fonts.ready repaints it otherwise) */
   function paintText() {
-    if (!forge || forge.textReady) return;
+    if (!forge || forge.textReady || !forge.opts.textEl) return;
     forge.drawText();
     if (document.fonts && document.fonts.status !== "loaded") document.fonts.ready.then(() => forge.drawText());
   }
@@ -369,7 +369,7 @@ export function runPreloader({ forge, sparks } = {}) {
     window.__ardentiumBeat = now;
     // the heavy one‑off work (wordmark texture, hero raster behind its masks) happens in the
     // near‑black first frames of scene 01, where a dropped frame cannot be seen
-    if (!forge.textReady) { paintText(); armAll(); }
+    if (!forge.textReady && !armed.length) { paintText(); armAll(); }
     const prev = sceneT;
     clock += dt;
     if (!frozen) sceneT = toScene(clock);

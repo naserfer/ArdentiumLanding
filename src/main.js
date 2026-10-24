@@ -5,6 +5,7 @@
 import { CONFIG, waLink, waPretty } from "./config.js";
 import { state, onTick, onRead, watchVisible, lerp, trackRect } from "./fx/ticker.js";
 import { Forge } from "./fx/forge-gl.js";
+import { HERO_FRAG } from "./fx/hero-ground.js";
 import { Sparks } from "./fx/sparks.js";
 import { initCursor } from "./fx/cursor.js";
 import { runPreloader } from "./fx/preloader.js";
@@ -25,29 +26,29 @@ if (year) year.textContent = String(Math.max(2026, new Date().getFullYear()));
 if (/^5950+$/.test(CONFIG.whatsapp)) console.info("[Ardentium] Configurá tu número de WhatsApp en src/config.js");
 
 /* ---------- hero items: painted at first paint (under the intro), revealed by its heat front ---------- */
-const heroItems = [...document.querySelectorAll(".hero__eyebrow, .hero__mark, .hero [data-reveal], .hero__meta")];
+const heroItems = [...document.querySelectorAll(".hero__eyebrow, .hero [data-reveal], .hero__meta")];
+const heroTitle = document.getElementById("heroTitle");
+const heroEm = heroTitle.querySelector("em");
 
 /* ---------- WebGL forge (hero + contact) ---------- */
 const hero = document.getElementById("top");
 // while the intro runs, its own shader compiles first; the field follows once the intro is on screen
 const introAhead = !state.reduced && html.classList.contains("is-loading");
-const forge = new Forge(document.getElementById("forge"), { textEl: document.getElementById("heroMark"), text: "ARDENTIUM", lazy: introAhead });
+const forge = new Forge(document.getElementById("forge"), {
+  lazy: introAhead, frag: HERO_FRAG, quality: state.mobile ? 0.6 : 0.8, wander: false,
+});
 const forge2 = new Forge(document.getElementById("forge2"), { base: 0.82, lazy: "near" });
 if (forge.ok) html.classList.add("gl-ready");
 forge.onfail = () => html.classList.remove("gl-ready");
-// repaint the wordmark with the real face once it loads (during the intro, the intro asks for it)
-if (document.fonts) document.fonts.ready.then(() => { if (!forge.opts.lazy || forge.textReady) forge.drawText(); });
-
 /* ---------- sparks ---------- */
 const sparks = state.reduced ? null : new Sparks(document.getElementById("sparks"));
 if (sparks) {
-  // embers rising off the molten floor while the hero is on screen
-  // (detail) a few embers rise off the molten floor while the hero is on screen — never during the intro
+  // (detail) a few embers rise off the forge mouth while the hero is on screen — never during the intro
   let acc = 0;
   sparks.addEmitter((dt, sp) => {
     if (!heroVisible || intro) return;
-    acc += dt * (state.mobile ? 8 : 16);
-    while (acc > 1) { acc--; sp.ember(Math.random() * state.vw, Math.min(state.vh, heroRect.bottom) - 10 - Math.random() * 60); }
+    acc += dt * (state.mobile ? 2.5 : 5);
+    while (acc > 1) { acc--; sp.ember(state.vw * (0.5 + (Math.random() + Math.random() - 1) * 0.42), Math.min(state.vh, heroRect.bottom) - 10 - Math.random() * 60); }
   });
   // (detail) a faint trail only when the cursor moves fast
   if (state.pointerFine) {
@@ -137,8 +138,19 @@ const parallax = (() => {
     if (Math.abs(tx - px) < 0.002 && Math.abs(ty - py) < 0.002) return;
     px = lerp(px, tx, 0.06); py = lerp(py, ty, 0.06);
     for (const [el, d] of layers) if (el) el.style.translate = `${(-px * d).toFixed(2)}px ${(-py * d).toFixed(2)}px`;
-    // the wordmark is the deepest layer: it moves in the shader, against the field
-    if (forge.ok) forge.par = [(px * 8) / Math.max(1, heroRect.width), (-py * 8) / Math.max(1, heroRect.height)];
+  };
+})();
+
+/* ---------- the incandescent edge of "vanguardia" follows the cursor ---------- */
+const titleLight = (() => {
+  if (!state.pointerFine || state.reduced) return null;
+  const box = trackRect(heroEm);
+  let lx = -1, ly = -1;
+  return (s) => {
+    if (!heroVisible || (s.mouseX === lx && s.mouseY === ly)) return;
+    lx = s.mouseX; ly = s.mouseY;
+    heroEm.style.setProperty("--hx", `${(lx - box.left).toFixed(1)}px`);
+    heroEm.style.setProperty("--hy", `${(ly - box.top).toFixed(1)}px`);
   };
 })();
 
@@ -152,6 +164,7 @@ onTick((s) => {
     forge2.render(s);
   }
   if (parallax) parallax(s);
+  if (titleLight) titleLight(s);
   if (giantTick) giantTick(s);
   if (sparks) sparks.tick(s);
   if (cursorTick) cursorTick(s);
@@ -162,11 +175,13 @@ onTick((s) => {
 runPreloader({ forge: forge.ok ? forge : null, sparks }).then((show) => {
   intro = false;
   show.sweep(heroItems);
-  // pour the metal into the wordmark, left to right
-  if (state.reduced || !forge.ok) { forge.ignite = 1; forge.still = false; return; }
-  show.pour(forge, () => {
-    if (!sparks) return;
-    const r = document.getElementById("heroMark").getBoundingClientRect();
-    sparks.line(r.left, r.right, r.bottom - r.height * 0.1, state.mobile ? 24 : 60);
-  });
+  if (state.reduced) return;
+  // the h1 lands: the incandescent edge runs once through "vanguardia"
+  heroTitle.classList.add("is-lit");
+  if (sparks) {
+    setTimeout(() => {
+      const r = heroEm.getBoundingClientRect();
+      sparks.line(r.left, r.right, r.bottom - r.height * 0.18, state.mobile ? 10 : 24);
+    }, 900);
+  }
 });
