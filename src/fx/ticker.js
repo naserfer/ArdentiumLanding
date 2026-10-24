@@ -1,7 +1,14 @@
 /**
  * One requestAnimationFrame loop for the whole page, plus shared scroll + pointer state.
+ * The loop is gsap.ticker (GSAP tweens and ScrollTrigger scrubs update first, then this frame).
  * Every effect subscribes here instead of running its own loop.
+ * Each frame runs in two phases: every onRead() callback first (reads only), then every onTick()
+ * callback (writes only). Element positions come from trackRect(): page offsets cached until the
+ * layout changes, plus the scroll — so no frame ever forces a style + layout flush to read them.
  */
+import { gsap } from "./gsap.js";
+
+const reads = new Set();
 const subs = new Set();
 let last = performance.now();
 let running = false;
@@ -49,14 +56,63 @@ function frame(now) {
   state.mouseVX *= 0.85;
   state.mouseVY *= 0.85;
 
+  updateRects();
+  for (const fn of reads) fn(state);
   for (const fn of subs) fn(state);
-  requestAnimationFrame(frame);
+}
+
+/* ---------- tracked rects: page geometry measured only when the layout changes ---------- */
+const tracked = new Set();
+let geoDirty = true;
+const invalidate = () => { geoDirty = true; };
+addEventListener("resize", invalidate, { passive: true });
+if ("ResizeObserver" in window) new ResizeObserver(invalidate).observe(document.body);
+if (document.fonts) document.fonts.ready.then(invalidate);
+
+function updateRects() {
+  if (!tracked.size) return;
+  if (geoDirty) {
+    geoDirty = false;
+    // offsets ignore transforms (an entrance still settling does not skew the cache)
+    for (const t of tracked) {
+      let x = 0, y = 0, n = t.el;
+      while (n) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+      t.px = x; t.py = y; t.width = t.el.offsetWidth; t.height = t.el.offsetHeight;
+    }
+  }
+  for (const t of tracked) {
+    t.top = t.py - state.scrollY; t.bottom = t.top + t.height;
+    t.left = t.px; t.right = t.px + t.width;
+  }
+}
+
+/**
+ * A live viewport rect for el ({ top, bottom, left, right, width, height }), refreshed every frame
+ * from cached page offsets. Not for position: sticky / fixed elements.
+ */
+export function trackRect(el) {
+  const t = { el, px: 0, py: 0, top: 0, bottom: 0, left: 0, right: 0, width: 0, height: 0 };
+  tracked.add(t);
+  geoDirty = true;
+  updateRects();
+  return t;
+}
+
+function start() {
+  if (!running) { running = true; last = performance.now(); gsap.ticker.add(() => frame(performance.now())); }
 }
 
 export function onTick(fn) {
   subs.add(fn);
-  if (!running) { running = true; requestAnimationFrame((t) => { last = t; frame(t); }); }
+  start();
   return () => subs.delete(fn);
+}
+
+/** Layout reads for this frame (getBoundingClientRect etc.); runs before any onTick write. */
+export function onRead(fn) {
+  reads.add(fn);
+  start();
+  return () => reads.delete(fn);
 }
 
 export const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));

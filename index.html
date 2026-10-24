@@ -319,37 +319,45 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anybody:ital,wdth,wght@0,50..150,100..900;1,50..150,100..900&family=Instrument+Sans:wdth,wght@75..100,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap" />
   <link rel="stylesheet" href="./src/styles/main.css" />
   <script>
-    /* Arm the intro before first paint; if the app never boots, fail open after 6 s. */
+    /* Arm the intro before first paint; if it has not finished after 6 s (JS or WebGL failed), fail open. */
     (function (d) {
       var h = d.documentElement;
       var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
       h.classList.add("js");
       if (!reduce) h.classList.add("is-loading");
-      setTimeout(function () { if (!window.__ardentium) h.classList.remove("js", "is-loading"); }, 6000);
+      // depth journey ("entering" each section) before first paint; it runs on CSS scroll-driven
+      // animations (compositor‑synced, so no jitter on touch); without them the page stays a plain scroll
+      if (!reduce && window.CSS && CSS.supports("animation-timeline: view()") && innerHeight >= 560) h.classList.add("ch-on");
+      var check = function () {
+        if (window.__ardentiumDone || !h.classList.contains("is-loading") && !h.classList.contains("is-intro")) return;
+        // the intro beats every frame; while it is alive (and not absurdly late) let it finish
+        var beat = window.__ardentiumBeat, now = performance.now();
+        if (beat && now - beat < 600 && now < 9000) return void setTimeout(check, 300);
+        h.classList.add("is-failsafe");
+        h.classList.remove("is-loading", "is-intro");
+      };
+      setTimeout(check, 6000);
     })(document);
   </script>
 </head>
 <body>
+  <!-- ============ INTRO: activación de la forja ============ -->
+  <!-- Outside the visual layer so keyboards and screen readers reach it from second 0 -->
+  <button class="intro-skip" id="introSkip" type="button">Saltar intro</button>
+  <p class="sr-only" id="introSr">Presentación animada: una forja se enciende, el isotipo de Ardentium se funde y se forja, y se revela el sitio.</p>
   <a class="skip" href="#contenido">Saltar al contenido</a>
 
-  <!-- ============ PRELOADER: ignición ============ -->
+  <!-- The scene is painted on the hero canvas; this layer covers the first paint and carries
+       the mark on its flight into the nav. -->
   <div class="loader" id="loader" aria-hidden="true">
-    <div class="loader__door loader__door--top"></div>
-    <div class="loader__door loader__door--bottom"></div>
-    <div class="loader__core">
-      <svg class="loader__mark" viewBox="0 0 100 100" aria-hidden="true">
-        <path class="lm-legs" d="M44 17 L56 17 L95 95 L76 95 L50 43 L24 95 L5 95 Z" pathLength="1" />
-        <rect class="lm-ingot" x="29" y="66" width="42" height="7" rx="1.8" />
-        <path class="lm-flame" d="M50 0 C54.5 5 56 9.5 50 14 C44 9.5 45.5 5 50 0Z" />
-      </svg>
-      <div class="loader__temp"><span id="loaderTemp">0000</span><small>°C</small></div>
-      <div class="loader__bar"><span id="loaderBar"></span></div>
-      <p class="loader__label">Encendiendo la forja</p>
-    </div>
+    <span class="loader__spark"></span>
+    <div class="intro__fly"><svg class="intro__mark" viewBox="0 0 100 100" hidden><use href="#mark" /></svg></div>
   </div>
 
   <!-- ============ FX layers ============ -->
   <canvas class="sparks" id="sparks" aria-hidden="true"></canvas>
+  <canvas class="tunnel" id="tunnel" aria-hidden="true"></canvas>
+  <p class="melt-note" id="meltNote" role="status" aria-live="polite"></p>
   <div class="cursor" id="cursor" aria-hidden="true"><span class="cursor__dot"></span><span class="cursor__ring"><em class="cursor__label"></em></span></div>
   <div class="grain" aria-hidden="true"></div>
 
@@ -372,6 +380,7 @@
       <a href="#contacto" data-scramble>Contacto</a>
     </nav>
     <a class="btn btn--molten nav__cta" data-wa data-magnetic href="https://wa.me/595000000000" target="_blank" rel="noopener">
+      <span class="btn__melt" aria-hidden="true"></span>
       <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wa" /></svg>
       <span>Hablemos</span>
     </a>
@@ -387,17 +396,16 @@
         <p class="eyebrow hero__eyebrow" data-split>
           <span>Fábrica de desarrollo</span><span>Asunción, PY</span><span>Est. 2026</span>
         </p>
-        <!-- The molten wordmark is painted by WebGL inside this box -->
-        <div class="hero__mark" id="heroMark" aria-hidden="true">
-          <span class="hero__mark-fallback">ARDENTIUM</span>
+        <div class="hero__head">
+          <h1 class="hero__title" id="heroTitle" data-reveal><span class="sr-only">Ardentium: </span>Forjamos software de <span class="nw"><em data-text="vanguardia">vanguar<span class="hero__door">d</span>ia</em>.</span></h1>
         </div>
         <div class="hero__foot">
           <div class="hero__copy">
-            <h1 class="hero__title" data-reveal><span class="sr-only">Ardentium: </span>Forjamos software de&nbsp;<em>vanguardia</em>.</h1>
             <p class="hero__sub" data-reveal>Desarrollo de software a medida, apps y automatización con IA en Paraguay. Lo diseñamos, lo construimos y lo ponemos a trabajar en tu negocio.</p>
           </div>
           <div class="hero__actions" data-reveal>
             <a class="btn btn--molten btn--lg" data-wa data-magnetic data-cursor="Escribir" href="https://wa.me/595000000000" target="_blank" rel="noopener">
+              <span class="btn__melt" aria-hidden="true"></span>
               <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wa" /></svg>
               <span>Contanos tu proyecto</span>
             </a>
@@ -415,22 +423,24 @@
     </section>
 
     <!-- ============ MARQUEE ============ -->
-    <div class="marquee" aria-hidden="true">
+    <div class="ch ch--band" style="--hold: 25vh" aria-hidden="true"><div class="ch__view"><div class="marquee ch__inner">
       <div class="marquee__track" id="marquee">
         <span>Vanguardia</span><b></b><span>Software a medida</span><b></b><span>SaaS</span><b></b><span>Apps de escritorio</span><b></b><span>Apps móviles</span><b></b><span>IA y automatización</span><b></b>
       </div>
       <div class="marquee__track marquee__track--stack" id="marquee2">
         <span>TypeScript</span><i>/</i><span>React</span><i>/</i><span>Node</span><i>/</i><span>Rust</span><i>/</i><span>Tauri</span><i>/</i><span>SQLite</span><i>/</i><span>PostgreSQL</span><i>/</i><span>Supabase</span><i>/</i><span>React Native</span><i>/</i><span>Agentes IA</span><i>/</i><span>WhatsApp API</span><i>/</i><span>ESC/POS</span><i>/</i>
       </div>
-    </div>
+    </div></div></div>
 
     <!-- ============ EL NOMBRE ============ -->
-    <section class="name wrap" id="nombre" aria-labelledby="nombreTitle">
+    <section class="name wrap ch" id="nombre" aria-labelledby="nombreTitle" style="--hold: 240vh">
+      <div class="ch__view">
+      <div class="name__stage ch__inner">
       <div class="name__tile-wrap">
         <div class="tile" id="tile" data-tilt>
           <div class="tile__glare"></div>
           <div class="tile__top"><span class="tile__z">2026</span><span class="tile__state">Incandescente</span></div>
-          <div class="tile__sym">Ad</div>
+          <div class="tile__sym">A<span class="tile__door">d</span></div>
           <div class="tile__name">Ardentium</div>
           <div class="tile__foot"><span>ardens + -ium</span><span>1538 °C</span></div>
         </div>
@@ -438,13 +448,17 @@
       </div>
       <div class="name__text">
         <h2 class="eyebrow" id="nombreTitle">El nombre</h2>
-        <p class="manifesto" id="manifesto">Ardentium viene del latín ardens: lo que arde. Le sumamos -ium, como a los elementos de la tabla periódica. Así nos vemos: un material nuevo, al rojo vivo, que toma la forma exacta de lo que tu negocio necesita.</p>
+        <p class="manifesto" id="manifesto"><span class="ph">Ardentium viene del latín ardens: lo que arde.</span> <span class="ph">Le sumamos -ium, como a los elementos de la tabla periódica.</span> <span class="ph">Así nos vemos: un material nuevo, al rojo vivo, que toma la forma exacta de lo que tu negocio necesita.</span></p>
         <p class="name__rule">Nacimos en 2026 con una regla simple: <strong>si no empuja el límite, no sale del horno.</strong></p>
+      </div>
+      </div>
       </div>
     </section>
 
     <!-- ============ SERVICIOS ============ -->
-    <section class="services wrap" id="servicios" aria-labelledby="servTitle">
+    <section class="services wrap ch" id="servicios" aria-labelledby="servTitle" style="--hold: 70vh">
+      <div class="ch__view">
+      <div class="ch__inner">
       <header class="sec-head">
         <p class="eyebrow">Servicios</p>
         <h2 class="display" id="servTitle" data-forge>Lo que forjamos</h2>
@@ -480,19 +494,27 @@
           <ul class="alloy"><li>Agentes</li><li>WhatsApp</li><li>APIs</li><li>Integraciones</li></ul>
         </article>
       </div>
+      </div>
+      </div>
     </section>
 
     <!-- ============ TRABAJOS ============ -->
     <section class="works" id="trabajos" aria-labelledby="worksTitle">
-      <header class="sec-head wrap">
+      <div class="ch ch--title" style="--hold: 30vh">
+      <div class="ch__view">
+      <header class="sec-head wrap ch__inner">
         <p class="eyebrow">Trabajos</p>
         <h2 class="display" id="worksTitle" data-forge>Coladas recientes</h2>
         <p class="sec-head__sub">Software hecho en Paraguay que ya está en producción. Cada proyecto sale del horno con su número de colada.</p>
       </header>
+      </div>
+      </div>
 
       <!-- KarúBox -->
-      <article class="case case--karu" id="karubox" aria-labelledby="karuTitle">
-        <div class="case__stick wrap">
+      <article class="case case--karu ch" id="karubox" aria-labelledby="karuTitle" style="--hold: 130vh">
+        <div class="ch__view">
+        <div class="case__stick wrap ch__inner">
+          <span class="case__bg" aria-hidden="true">001</span>
           <div class="case__info">
             <p class="case__lot"><span>Colada N.º 001</span><span class="tag">Producto propio · SaaS</span></p>
             <h3 class="case__name" id="karuTitle">KarúBox</h3>
@@ -555,11 +577,14 @@
             </ol>
           </div>
         </div>
+        </div>
       </article>
 
       <!-- MotelApp -->
-      <article class="case case--motel" id="motelapp" aria-labelledby="motelTitle">
-        <div class="case__stick wrap">
+      <article class="case case--motel ch" id="motelapp" aria-labelledby="motelTitle" style="--hold: 130vh">
+        <div class="ch__view">
+        <div class="case__stick wrap ch__inner">
+          <span class="case__bg" aria-hidden="true">002</span>
           <div class="case__info">
             <p class="case__lot"><span>Colada N.º 002</span><span class="tag">Sistema de recepción · Escritorio</span></p>
             <h3 class="case__name" id="motelTitle">MotelApp</h3>
@@ -595,11 +620,14 @@
             </figure>
           </div>
         </div>
+        </div>
       </article>
 
       <!-- Sabor del Chipá -->
-      <article class="case case--chipa" id="sabordelchipa" aria-labelledby="chipaTitle">
-        <div class="case__stick wrap">
+      <article class="case case--chipa ch" id="sabordelchipa" aria-labelledby="chipaTitle" style="--hold: 130vh">
+        <div class="ch__view">
+        <div class="case__stick wrap ch__inner">
+          <span class="case__bg" aria-hidden="true">003</span>
           <div class="case__info">
             <p class="case__lot"><span>Colada N.º 003</span><span class="tag">Tienda online · Web</span></p>
             <h3 class="case__name" id="chipaTitle">Sabor del Chipá</h3>
@@ -639,11 +667,14 @@
             </figure>
           </div>
         </div>
+        </div>
       </article>
     </section>
 
     <!-- ============ PROCESO ============ -->
-    <section class="process wrap" id="proceso" aria-labelledby="procTitle">
+    <section class="process wrap ch" id="proceso" aria-labelledby="procTitle" style="--hold: 220vh">
+      <div class="ch__view">
+      <div class="process__stage ch__inner">
       <header class="sec-head">
         <p class="eyebrow">Proceso</p>
         <h2 class="display" id="procTitle" data-forge>Del mineral a la pieza</h2>
@@ -656,10 +687,14 @@
         <li class="step"><span class="step__n">04</span><div><h3>Templar</h3><p>Probamos con casos reales hasta que el sistema aguanta el día a día.</p></div></li>
         <li class="step"><span class="step__n">05</span><div><h3>Entregar</h3><p>Instalamos, capacitamos y acompañamos. Después, lo seguimos mejorando.</p></div></li>
       </ol>
+      </div>
+      </div>
     </section>
 
     <!-- ============ EQUIPO ============ -->
-    <section class="team wrap" id="equipo" aria-labelledby="teamTitle">
+    <section class="team wrap ch" id="equipo" aria-labelledby="teamTitle" style="--hold: 50vh">
+      <div class="ch__view">
+      <div class="ch__inner">
       <header class="sec-head">
         <p class="eyebrow">Equipo</p>
         <h2 class="display" id="teamTitle" data-forge>Quiénes forjan</h2>
@@ -694,6 +729,8 @@
             <span>Hablá con nosotros</span>
           </a>
         </aside>
+      </div>
+      </div>
       </div>
     </section>
 
@@ -740,6 +777,7 @@
         <h2 class="cta__title" id="ctaTitle" data-forge>¿Qué forjamos juntos?</h2>
         <p class="cta__sub">Contanos tu idea por WhatsApp. Te respondemos rápido y sin vueltas.</p>
         <a class="btn btn--molten btn--xl" data-wa data-magnetic data-cursor="Escribir" href="https://wa.me/595000000000" target="_blank" rel="noopener">
+          <span class="btn__melt" aria-hidden="true"></span>
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wa" /></svg>
           <span>Escribinos por WhatsApp</span>
         </a>

@@ -34,8 +34,11 @@ export class Sparks {
 
   resize() {
     this.dpr = Math.min(devicePixelRatio || 1, 1.5);
-    this.canvas.width = Math.round(innerWidth * this.dpr);
-    this.canvas.height = Math.round(innerHeight * this.dpr);
+    // the box is 100lvh, so the address bar sliding does not change it; setting the size clears the canvas
+    const w = Math.round((this.canvas.clientWidth || innerWidth) * this.dpr);
+    const h = Math.round((this.canvas.clientHeight || innerHeight) * this.dpr);
+    if (w !== this.canvas.width) this.canvas.width = w;
+    if (h !== this.canvas.height) this.canvas.height = h;
   }
 
   spawn(o) {
@@ -92,7 +95,8 @@ export class Sparks {
     for (let i = this.p.length - 1; i >= 0; i--) {
       const q = this.p[i];
       q.life += dt;
-      if (q.life >= q.max || q.y > innerHeight + 40 || q.y < -60) { this.p.splice(i, 1); continue; }
+      // state.vh, not innerHeight: reading innerHeight in a frame can force a style + layout flush
+      if (q.life >= q.max || q.y > s.vh + 40 || q.y < -60) { this.p.splice(i, 1); continue; }
       q.vy += q.g * dt;
       q.vx *= q.drag; q.vy *= q.drag;
       if (q.kind === "ember") q.vx += Math.sin(s.time * 2 + q.seed) * 8 * dt;

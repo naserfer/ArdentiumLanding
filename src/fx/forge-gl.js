@@ -4,44 +4,26 @@
  * Domain‑warped fbm noise builds a cooling crust with glowing veins; the value is mapped
  * through a black‑body ramp (the real colours of heated steel). The cursor is a heat source,
  * a click is a hammer strike (shock ring + white flash), and an optional wordmark is poured
- * into the field as liquid metal, igniting left to right.
+ * into the field as liquid metal, igniting left to right. Before the pour reaches them the
+ * letters read as cold cast iron, the same material the intro raises them in.
+ *
+ * Other programs (the intro) can share this context through makeProgram() + overlay.
  */
-import { state, clamp, lerp, watchVisible } from "./ticker.js";
+import { state, clamp, lerp, watchVisible, trackRect } from "./ticker.js";
 
-const VERT = `
+export const VERT = `
 attribute vec2 aPos;
 varying vec2 vUv;
 void main() { vUv = aPos * .5 + .5; gl_Position = vec4(aPos, 0., 1.); }
 `;
 
-const FRAG = `
-precision highp float;
-uniform vec2 uRes;
-uniform float uTime;
-uniform vec2 uMouse;
-uniform float uHeat;
-uniform vec4 uStrike;
-uniform sampler2D uText;
-uniform float uTextOn;
-uniform float uIgnite;
-uniform float uBase;
-uniform float uScroll;
-uniform vec2 uTC;
-uniform vec2 uSq;
-uniform vec2 uTexel;
-varying vec2 vUv;
-
+/** Shared GLSL: noise, the black‑body ramp and the cast‑letter material. */
+export const GLSL_COMMON = `
 float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 float noise(vec2 p) {
   vec2 i = floor(p), f = fract(p);
   vec2 u = f * f * (3. - 2. * f);
   return mix(mix(hash(i), hash(i + vec2(1., 0.)), u.x), mix(hash(i + vec2(0., 1.)), hash(i + vec2(1., 1.)), u.x), u.y);
-}
-float fbm(vec2 p) {
-  float v = 0., a = .5;
-  mat2 m = mat2(1.6, 1.2, -1.2, 1.6);
-  for (int i = 0; i < 5; i++) { v += a * noise(p); p = m * p; a *= .5; }
-  return v;
 }
 vec3 ramp(float t) {
   t = clamp(t, 0., 1.);
@@ -53,6 +35,50 @@ vec3 ramp(float t) {
   if (t < .7) return mix(c3, c4, (t - .55) / .15);
   if (t < .85) return mix(c4, c5, (t - .7) / .15);
   return mix(c5, c6, (t - .85) / .15);
+}
+// bevel normal of the letters from the narrow blur stored in B
+vec3 letterNormal(sampler2D tex, vec2 tuv, vec2 texel) {
+  vec2 o = texel * 2.;
+  float bx = texture2D(tex, tuv + vec2(o.x, 0.)).b - texture2D(tex, tuv - vec2(o.x, 0.)).b;
+  float by = texture2D(tex, tuv + vec2(0., o.y)).b - texture2D(tex, tuv - vec2(0., o.y)).b;
+  return normalize(vec3(-bx * 3.2, -by * 3.2, 1.));
+}
+// cold cast iron (below the black‑body ramp): dark grey, the bevel catches the warm light
+vec3 coldIron(vec3 n, vec2 p, vec2 light, float k) {
+  vec3 L = normalize(vec3(light - p, .55));
+  float diff = max(dot(n, L), 0.);
+  float spec = pow(max(dot(reflect(-L, n), vec3(0., 0., 1.)), 0.), 18.);
+  return vec3(.07, .064, .06) * (.45 + 1.2 * diff * k) + vec3(1., .62, .34) * spec * .55 * k;
+}
+`;
+
+const FIELD_FRAG = `
+precision highp float;
+uniform vec2 uRes;
+uniform float uTime;
+uniform vec2 uMouse;
+uniform float uHeat;
+uniform vec4 uStrike;
+uniform sampler2D uText;
+uniform float uTextOn;
+uniform float uIgnite;
+uniform float uCold;
+uniform float uBase;
+uniform float uScroll;
+uniform vec2 uTC;
+uniform vec2 uSq;
+uniform vec2 uTexel;
+uniform vec2 uPar;
+uniform float uOct;
+varying vec2 vUv;
+${GLSL_COMMON}
+float fbm(vec2 p) {
+  float v = 0., a = .5;
+  mat2 m = mat2(1.6, 1.2, -1.2, 1.6);
+  // the break on a uniform (always 5) keeps the compiler from unrolling 7 × 5 octaves:
+  // same picture, ~60 % less compile time (≈1.1 s → 0.4 s on D3D11)
+  for (int i = 0; i < 5; i++) { if (float(i) >= uOct) break; v += a * noise(p); p = m * p; a *= .5; }
+  return v;
 }
 
 void main() {
@@ -79,8 +105,10 @@ void main() {
   float cool = 1. - uScroll * .6;
   temp *= cool;
 
+  float coldM = 0.;
+  vec3 coldC = vec3(0.);
   if (uTextOn > .0) {
-    vec2 tuv = uTC + (vUv - uTC) / uSq;
+    vec2 tuv = uTC + (vUv - uTC) / uSq - uPar;
     // heat shimmer: the air above molten metal wobbles
     tuv.y += (noise(vec2(tuv.x * 38., uTime * 1.6)) - .5) * .0035;
     tuv.x += (noise(vec2(tuv.y * 30., uTime * 1.3 + 7.)) - .5) * .002;
@@ -94,13 +122,14 @@ void main() {
     temp += tx.g * (1. - tx.r) * ign * .16;
 
     // cast‑metal bevel: normal from the narrow blur (B), lit by the cursor
-    vec2 o = uTexel * 2.;
-    float bx = texture2D(uText, tuv + vec2(o.x, 0.)).b - texture2D(uText, tuv - vec2(o.x, 0.)).b;
-    float by = texture2D(uText, tuv + vec2(0., o.y)).b - texture2D(uText, tuv - vec2(0., o.y)).b;
-    vec3 n = normalize(vec3(-bx * 3.2, -by * 3.2, 1.));
+    vec3 n = letterNormal(uText, tuv, uTexel);
     vec3 L = normalize(vec3(m - p, .55));
     float diff = max(dot(n, L), 0.);
     float spec = pow(max(dot(reflect(-L, n), vec3(0., 0., 1.)), 0.), 22.);
+
+    // letters the pour has not reached yet are cold cast iron
+    coldM = tx.r * (1. - ign) * uCold;
+    coldC = coldIron(n, p, m, .6 + .4 * uHeat);
 
     float mf = fbm(p * 4.2 + vec2(t * 3., -t * 6.) + 2. * r);
     float textTemp = .5 + .34 * mf + .1 * veins;
@@ -122,7 +151,7 @@ void main() {
     temp += (ring * .55 + flash * .6) * uStrike.w;
   }
 
-  vec3 col = ramp(temp);
+  vec3 col = mix(ramp(temp), coldC, coldM);
   float vig = smoothstep(1.4, .2, length(p * vec2(.72, 1.)));
   col *= mix(.5, 1., vig);
   col += (hash(frag + fract(uTime) * 91.7) - .5) * .022;
@@ -130,17 +159,26 @@ void main() {
 }
 `;
 
+const UNIFORMS = ["uRes", "uTime", "uBgT", "uMouse", "uHeat", "uStrike", "uText", "uTextOn", "uIgnite", "uCold", "uBase", "uScroll", "uTC", "uSq", "uTexel", "uPar", "uOct"];
+
 export class Forge {
   /**
    * @param {HTMLCanvasElement} canvas
-   * @param {{ textEl?: HTMLElement, text?: string, base?: number, interactive?: boolean }} opts
+   * @param {{ textEl?: HTMLElement, text?: string, base?: number, interactive?: boolean, lazy?: boolean | "near" }} opts
+   *   lazy: don't compile the field yet — call compile() when it is needed. Shader compiles queue up
+   *   in the GPU process, so what is needed first must be compiled first.
+   *   "near": don't even create the context until the canvas comes within a screen of the viewport
+   *   (a WebGL context costs ~100–300 ms of main thread while the page boots).
+   * frag: fragment shader (default: the molten field); quality: render scale;
+   * wander: false keeps the light still (and cold) when nobody points.
    */
   constructor(canvas, opts = {}) {
     this.canvas = canvas;
-    this.opts = { base: 1, interactive: true, ...opts };
+    this.opts = { base: 1, interactive: true, wander: true, ...opts };
     this.ok = false;
+    this.ready = false;                 // the program finished compiling
     this.visible = false;
-    this.quality = state.mobile ? 0.5 : 0.72;
+    this.quality = opts.quality || (state.mobile ? 0.5 : 0.72);
     this.frameTimes = [];
     this.heat = 0.35;
     this.heatTarget = 0.35;
@@ -148,45 +186,86 @@ export class Forge {
     this.tx = 0; this.ty = 0;           // target mouse
     this.hasPointer = false;
     this.ignite = opts.textEl ? 0 : 1;
+    this.cold = 1;                      // show un‑poured letters as cold iron
+    this.par = [0, 0];                  // wordmark parallax, uv
     this.strike = { x: 0, y: 0, age: 9, power: 0 };
     this.sq = { x: 1, y: 1, vx: 0, vy: 0 };
     this.scrollK = 0;
+    this.field = true;                  // draw the molten field (the intro may take over the canvas)
+    this.overlay = null;                // fn(gl, s, forge) drawn after the field
+    this.onfail = null;
 
+    if (opts.lazy === "near") watchVisible(canvas, (v) => { if (v && !this.gl) this.#init(); }, "100% 0px");
+    else this.#init();
+  }
+
+  #init() {
+    const { canvas, opts } = this;
     const gl = canvas.getContext("webgl", { antialias: false, alpha: false, powerPreference: "high-performance", preserveDrawingBuffer: false });
     if (!gl) return;
     this.gl = gl;
-    if (!this.#program()) return;
+    // compile off the main thread when the browser can (no long task while the page boots)
+    this.par_ext = gl.getExtension("KHR_parallel_shader_compile");
+    this.prog = null;
+    if (import.meta.env.DEV || location.search.includes("probe")) canvas.__f = this;
     this.#geometry();
     this.#textTexture();
     this.ok = true;
 
     this.resize();
+    this.rect = trackRect(canvas);
     // resize lazily at the start of the next frame, so a resized canvas is never presented blank
     new ResizeObserver(() => { this.dirty = true; }).observe(canvas);
     watchVisible(canvas, (v) => { this.visible = v; }, "80px");
+    if (opts.lazy !== true) this.compile();
   }
 
-  #program() {
+  /** Starts compiling the field program (no‑op if it already is). */
+  compile() {
+    if (this.gl && !this.prog) this.prog = this.makeProgram(VERT, this.opts.frag || FIELD_FRAG);
+  }
+
+  /**
+   * Compiles + links a program without blocking. Returns a handle whose .ready() is polled each
+   * frame; .u holds the uniform locations once it is linked. aPos is always attribute 0.
+   */
+  makeProgram(vsSrc, fsSrc, names = UNIFORMS) {
     const { gl } = this;
-    const sh = (type, src) => {
-      const s = gl.createShader(type);
-      gl.shaderSource(s, src);
-      gl.compileShader(s);
-      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.warn(gl.getShaderInfoLog(s)); return null; }
-      return s;
-    };
-    const vs = sh(gl.VERTEX_SHADER, VERT), fs = sh(gl.FRAGMENT_SHADER, FRAG);
-    if (!vs || !fs) return false;
+    const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+    const vs = sh(gl.VERTEX_SHADER, vsSrc), fs = sh(gl.FRAGMENT_SHADER, fsSrc);
     const pr = gl.createProgram();
-    gl.attachShader(pr, vs); gl.attachShader(pr, fs); gl.linkProgram(pr);
-    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) { console.warn(gl.getProgramInfoLog(pr)); return false; }
-    gl.useProgram(pr);
-    this.pr = pr;
-    this.u = {};
-    for (const n of ["uRes", "uTime", "uMouse", "uHeat", "uStrike", "uText", "uTextOn", "uIgnite", "uBase", "uScroll", "uTC", "uSq", "uTexel"]) {
-      this.u[n] = gl.getUniformLocation(pr, n);
-    }
-    return true;
+    gl.attachShader(pr, vs); gl.attachShader(pr, fs);
+    gl.bindAttribLocation(pr, 0, "aPos");
+    gl.linkProgram(pr);
+    const ext = this.par_ext;
+    const handle = {
+      pr, u: null, failed: false,
+      ready: () => {
+        if (handle.u) return true;
+        if (handle.failed) return false;
+        if (ext && !gl.getProgramParameter(pr, ext.COMPLETION_STATUS_KHR)) return false;
+        if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) {
+          console.warn(gl.getShaderInfoLog(fs) || gl.getProgramInfoLog(pr));
+          handle.failed = true;
+          return false;
+        }
+        handle.u = {};
+        for (const n of names) handle.u[n] = gl.getUniformLocation(pr, n);
+        gl.deleteShader(vs); gl.deleteShader(fs);
+        return true;
+      },
+      dispose: () => { gl.deleteProgram(pr); },
+    };
+    return handle;
+  }
+
+  /** true once the field program is linked; flips .ok off (and calls onfail) if it failed. */
+  poll() {
+    if (this.ready) return true;
+    if (!this.ok || !this.prog) return false;
+    if (this.prog.ready()) { this.ready = true; this.u = this.prog.u; return true; }
+    if (this.prog.failed) { this.ok = false; if (this.onfail) this.onfail(); }
+    return false;
   }
 
   #geometry() {
@@ -194,9 +273,8 @@ export class Forge {
     const buf = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    const loc = gl.getAttribLocation(this.pr, "aPos");
-    gl.enableVertexAttribArray(loc);
-    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
   }
 
   #textTexture() {
@@ -274,6 +352,8 @@ export class Forge {
     // hammer squash pivots around the word's centre (uv space, y up)
     this.tc = [(box.x + box.w / 2) / tc.width, 1 - (box.y + box.h / 2) / tc.height];
     this.texel = [1 / tc.width, 1 / tc.height];
+    // the inked glyphs in uv (x0, bottom, x1, top): the intro raises the word out of this slot
+    this.glyph = [x / tc.width, 1 - (y + desc) / tc.height, (x + m2.width) / tc.width, 1 - (y - asc) / tc.height];
     this.textReady = true;
     this.still = false;
   }
@@ -295,7 +375,9 @@ export class Forge {
       if (!this.hasPointer && !this._placed) { this._placed = true; this.tx = this.mx = w * 0.62; this.ty = this.my = h * 0.45; }
     }
     const cssKey = `${Math.round(r.width)}x${Math.round(r.height)}`;
-    if (cssKey !== this.cssKey) { this.cssKey = cssKey; this.drawText(); }
+    // a lazy forge (the intro owns the boot) paints its wordmark when asked, not while the page boots:
+    // the blurred glows are heavy GPU raster work that would delay the intro's first frame
+    if (cssKey !== this.cssKey) { this.cssKey = cssKey; if (!this.opts.lazy || this.textReady) this.drawText(); }
   }
 
   /** client coords → canvas px (y up) */
@@ -320,14 +402,16 @@ export class Forge {
 
   render(s) {
     if (!this.ok || !this.visible) return;
+    const fieldReady = this.poll();
+    if (!fieldReady && !this.overlay) return;
     if (this.dirty) { this.dirty = false; this.resize(); }
     // reduced motion: paint one still frame (again only after a resize / text change)
-    if (state.reduced) { if (this.still) return; this.still = true; }
+    if (state.reduced && !this.overlay) { if (this.still) return; this.still = true; }
     const t0 = performance.now();
     const { gl, u } = this;
 
     // ambient wandering heat when nobody is pointing (touch, idle)
-    if (!this.hasPointer || state.reduced) {
+    if ((!this.hasPointer || state.reduced) && this.opts.wander) {
       const W = this.canvas.width, H = this.canvas.height;
       this.tx = W * (0.5 + 0.3 * Math.sin(s.time * 0.35));
       this.ty = H * (0.45 + 0.2 * Math.sin(s.time * 0.5 + 1.3));
@@ -342,25 +426,37 @@ export class Forge {
       this.sq["v" + k] += f * s.dt;
       this.sq[k] += this.sq["v" + k] * s.dt;
     }
-    const rect = this.canvas.getBoundingClientRect();
-    this.scrollK = clamp(-rect.top / Math.max(1, rect.height));
+    this.scrollK = clamp(-this.rect.top / Math.max(1, this.rect.height));
 
-    gl.uniform2f(u.uRes, this.canvas.width, this.canvas.height);
-    gl.uniform1f(u.uTime, s.time + 40);
-    gl.uniform2f(u.uMouse, this.mx, this.my);
-    gl.uniform1f(u.uHeat, this.heat);
-    gl.uniform4f(u.uStrike, this.strike.x, this.strike.y, this.strike.age, this.strike.age < 3 ? this.strike.power : 0);
-    gl.uniform1f(u.uTextOn, this.textReady ? 1 : 0);
-    gl.uniform1f(u.uIgnite, this.ignite);
-    gl.uniform1f(u.uBase, this.opts.base);
-    gl.uniform1f(u.uScroll, this.scrollK);
-    gl.uniform2f(u.uTC, this.tc ? this.tc[0] : 0.5, this.tc ? this.tc[1] : 0.5);
-    gl.uniform2f(u.uSq, this.sq.x, this.sq.y);
-    gl.uniform2f(u.uTexel, this.texel ? this.texel[0] : 0.001, this.texel ? this.texel[1] : 0.001);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, this.tex);
-    gl.uniform1i(u.uText, 0);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    // the first draw of a program is when ANGLE/D3D really finishes it (a 150–250 ms GPU stall): draw the
+    // field once as soon as it is ready, under the intro (which covers it), never first at the reveal
+    if (fieldReady && (this.field || !this.warm)) {
+      this.warm = true;
+      gl.useProgram(this.prog.pr);
+      gl.disable(gl.BLEND);
+      gl.uniform2f(u.uRes, this.canvas.width, this.canvas.height);
+      gl.uniform1f(u.uTime, s.time + 40);
+      // touch: the ground holds still (nothing full‑screen moves by itself)
+      gl.uniform1f(u.uBgT, state.pointerFine && !state.reduced ? s.time + 40 : 47);
+      gl.uniform2f(u.uMouse, this.mx, this.my);
+      gl.uniform1f(u.uHeat, this.hasPointer || this.opts.wander ? this.heat : 0);
+      gl.uniform4f(u.uStrike, this.strike.x, this.strike.y, this.strike.age, this.strike.age < 3 ? this.strike.power : 0);
+      gl.uniform1f(u.uTextOn, this.textReady ? 1 : 0);
+      gl.uniform1f(u.uIgnite, this.ignite);
+      gl.uniform1f(u.uCold, this.cold);
+      gl.uniform1f(u.uBase, this.opts.base);
+      gl.uniform1f(u.uScroll, this.scrollK);
+      gl.uniform2f(u.uTC, this.tc ? this.tc[0] : 0.5, this.tc ? this.tc[1] : 0.5);
+      gl.uniform2f(u.uSq, this.sq.x, this.sq.y);
+      gl.uniform2f(u.uTexel, this.texel ? this.texel[0] : 0.001, this.texel ? this.texel[1] : 0.001);
+      gl.uniform2f(u.uPar, this.par[0], this.par[1]);
+      gl.uniform1f(u.uOct, 5);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, this.tex);
+      gl.uniform1i(u.uText, 0);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+    if (this.overlay) this.overlay(gl, s, this);
 
     this.#adapt(performance.now() - t0, s.dt);
   }
