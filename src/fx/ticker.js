@@ -1,10 +1,13 @@
 /**
  * One requestAnimationFrame loop for the whole page, plus shared scroll + pointer state.
+ * The loop is gsap.ticker (GSAP tweens and ScrollTrigger scrubs update first, then this frame).
  * Every effect subscribes here instead of running its own loop.
  * Each frame runs in two phases: every onRead() callback first (reads only), then every onTick()
  * callback (writes only). Element positions come from trackRect(): page offsets cached until the
  * layout changes, plus the scroll — so no frame ever forces a style + layout flush to read them.
  */
+import { gsap } from "./gsap.js";
+
 const reads = new Set();
 const subs = new Set();
 let last = performance.now();
@@ -56,7 +59,6 @@ function frame(now) {
   updateRects();
   for (const fn of reads) fn(state);
   for (const fn of subs) fn(state);
-  requestAnimationFrame(frame);
 }
 
 /* ---------- tracked rects: page geometry measured only when the layout changes ---------- */
@@ -97,7 +99,7 @@ export function trackRect(el) {
 }
 
 function start() {
-  if (!running) { running = true; requestAnimationFrame((t) => { last = t; frame(t); }); }
+  if (!running) { running = true; last = performance.now(); gsap.ticker.add(() => frame(performance.now())); }
 }
 
 export function onTick(fn) {

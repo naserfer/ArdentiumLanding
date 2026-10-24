@@ -2,7 +2,8 @@
  * Micro‑interactions: magnetic buttons, scrambled nav labels, 3D tilt, cursor heat‑spots
  * and count‑up numbers.
  */
-import { state, easeOutExpo } from "./ticker.js";
+import { state } from "./ticker.js";
+import { gsap } from "./gsap.js";
 
 /** Buttons lean toward the pointer, then snap back with an elastic ease. */
 export function initMagnetic() {
@@ -29,21 +30,21 @@ export function initScramble() {
   const glyphs = "ARDENTIUM#%&*+=<>/0123456789";
   document.querySelectorAll("[data-scramble]").forEach((el) => {
     const final = el.textContent;
-    let raf = 0;
+    const k = { p: 0 };
+    let tw = null;
     const run = () => {
-      cancelAnimationFrame(raf);
-      const start = performance.now();
-      const dur = 420;
-      const step = (now) => {
-        const p = Math.min(1, (now - start) / dur);
-        const fixed = Math.floor(p * final.length);
-        let out = final.slice(0, fixed);
-        for (let i = fixed; i < final.length; i++) out += final[i] === " " ? " " : glyphs[(Math.random() * glyphs.length) | 0];
-        el.textContent = out;
-        if (p < 1) raf = requestAnimationFrame(step);
-        else el.textContent = final;
-      };
-      raf = requestAnimationFrame(step);
+      if (tw) tw.kill();
+      k.p = 0;
+      tw = gsap.to(k, {
+        p: 1, duration: 0.42, ease: "none",
+        onUpdate: () => {
+          const fixed = Math.floor(k.p * final.length);
+          let out = final.slice(0, fixed);
+          for (let i = fixed; i < final.length; i++) out += final[i] === " " ? " " : glyphs[(Math.random() * glyphs.length) | 0];
+          el.textContent = out;
+        },
+        onComplete: () => { el.textContent = final; },
+      });
     };
     el.addEventListener("pointerenter", run);
     el.addEventListener("focus", run);
@@ -89,14 +90,8 @@ export function initCounters() {
       if (!e.isIntersecting) return;
       io.unobserve(e.target);
       const el = e.target;
-      const to = +el.dataset.count;
-      const start = performance.now();
-      const step = (now) => {
-        const p = Math.min(1, (now - start) / 1400);
-        el.textContent = Math.round(to * easeOutExpo(p));
-        if (p < 1) requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
+      const k = { v: 0 };
+      gsap.to(k, { v: +el.dataset.count, duration: 1.4, ease: "expo.out", onUpdate: () => { el.textContent = Math.round(k.v); } });
     });
   }, { threshold: 0.6 });
   document.querySelectorAll("[data-count]").forEach((el) => {
