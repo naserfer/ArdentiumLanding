@@ -102,7 +102,7 @@ export function initForgeHeadings(sparks) {
   }, { threshold: 0.5 });
 
   document.querySelectorAll("[data-forge]").forEach((el) => {
-    if (el.getBoundingClientRect().top < innerHeight) return;
+    if (el.getBoundingClientRect().top < innerHeight || el.closest("[data-story]")) return;
     el.classList.add("is-cold");
     io.observe(el);
   });

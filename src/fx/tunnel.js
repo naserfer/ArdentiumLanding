@@ -20,7 +20,7 @@ export function initTunnel(canvas) {
     const a = Math.random() * Math.PI * 2, r = 0.18 + Math.pow(Math.random(), 0.7) * 1.25;
     return { x: Math.cos(a) * r, y: Math.sin(a) * r * 0.85, z: Math.random(), s: 0.5 + Math.random() * 1.5 };
   });
-  const rooms = [trackRect(document.getElementById("top")), ...[...document.querySelectorAll(".ch")].map(trackRect)];
+  const rooms = [trackRect(document.getElementById("top")), ...[...document.querySelectorAll(".ch")].filter((c) => c.offsetParent).map(trackRect)];
 
   let W = 0, H = 0, dpr = 1, docH = 1;
   const resize = () => {

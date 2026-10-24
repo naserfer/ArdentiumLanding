@@ -16,6 +16,8 @@ export const FINE_Q = "(hover: hover) and (pointer: fine) and (prefers-reduced-m
 const REDUCED_Q = "(prefers-reduced-motion: reduce)";
 /** centre of the bowl of the italic "d", as a fraction of the glyph's inline box */
 const DOOR_X = 0.5, DOOR_Y = 0.52;
+/** same, for the upright "d" of the "Ad" tile */
+const LAND_X = 0.42, LAND_Y = 0.6;
 
 const html = document.documentElement;
 const $ = (s, r = document) => r.querySelector(s);
@@ -43,7 +45,7 @@ function offsetIn(el, ancestor) {
 }
 
 function initChambers() {
-  const chambers = $$(".ch");
+  const chambers = $$(".ch").filter((c) => c.offsetParent);
   const n = Math.max(1, chambers.length - 1);
   chambers.forEach((c, i) => {
     // earlier chambers fly past the camera in front of the ones arriving behind them
@@ -77,9 +79,30 @@ function initChambers() {
       el.style.setProperty("--dive-y", `${cy - b.y}px`);
     }
   };
-  dive();
-  addEventListener("resize", dive, { passive: true });
-  if (document.fonts) document.fonts.ready.then(dive);
+  // ...and comes out of the bowl of the "d" of "Ad", in the name chamber
+  const landView = $("#nombre .ch__view"), landDoor = $("#nombre .tile__door");
+  const land = () => {
+    if (!landView || !landDoor) return;
+    const o = offsetIn(landDoor, landView);
+    landView.style.setProperty("--land-x", `${o.x + landDoor.offsetWidth * LAND_X}px`);
+    landView.style.setProperty("--land-y", `${o.y + landDoor.offsetHeight * LAND_Y}px`);
+  };
+  const place = () => { dive(); land(); };
+  place();
+  addEventListener("resize", place, { passive: true });
+  if (document.fonts) document.fonts.ready.then(place);
+
+  for (const h of $$(".ch [data-forge]")) forgeLetters(h);
+}
+
+/** Splits a title into letters scattered like raw ore; the chamber's arrival hammers them home. */
+function forgeLetters(h) {
+  const text = h.textContent.trim().replace(/\s+/g, " ");
+  const r = (a) => (Math.random() - 0.5) * a;
+  h.setAttribute("aria-label", text);
+  h.innerHTML = text.split(" ").map((w) => `<span class="fw" aria-hidden="true">${[...w].map((c) =>
+    `<span class="fc" style="--dx:${r(1.4).toFixed(2)}em;--dy:${r(1.8).toFixed(2)}em;--r:${r(80).toFixed(0)}deg;--s:${(0.55 + Math.random() * 0.9).toFixed(2)}">${c}</span>`
+  ).join("")}</span>`).join(" ");
 }
 
 export function initStory() {
