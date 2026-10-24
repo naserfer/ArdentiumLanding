@@ -204,7 +204,8 @@ export function initScrollFx() {
         links.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === `#${e.target.id}`));
       });
     }, { rootMargin: "-45% 0px -50% 0px" });
-    ["servicios", "trabajos", "proceso", "equipo", "contacto"].forEach((id) => { const el = document.getElementById(id); if (el) io.observe(el); });
+    // top and nombre have no link: crossing them clears the active one
+    ["top", "nombre", "servicios", "trabajos", "proceso", "equipo", "contacto"].forEach((id) => { const el = document.getElementById(id); if (el) io.observe(el); });
   }
 
   /* ---------- floating WhatsApp steps aside while a big CTA is on screen ---------- */

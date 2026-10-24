@@ -74,7 +74,8 @@ export function initReveal() {
       e.target.classList.add("is-cut");
       setTimeout(() => e.target.classList.remove("is-cutting", "is-cut"), 1700);
     });
-  }, { threshold: 0.12 });
+  // threshold 0: a stage that starts fully clipped reports an intersection ratio of 0, never 0.12
+  }, { threshold: 0, rootMargin: "0px 0px -15% 0px" });
   CUTS.forEach((sel) => document.querySelectorAll(sel).forEach((el) => {
     if (!below(el)) return;
     el.classList.add("is-cutting");

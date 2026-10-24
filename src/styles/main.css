@@ -62,6 +62,8 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   scroll-padding-top: var(--nav-h);
+  /* the intro locks scrolling; keep the gutter so unlocking does not shift the page */
+  scrollbar-gutter: stable;
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
@@ -191,7 +193,8 @@ html:not(.is-loading):not(.is-intro) .intro-skip, .intro-skip[hidden], html.is-f
   z-index: 60; pointer-events: none; mix-blend-mode: screen;
 }
 .grain {
-  position: fixed; inset: -50%; z-index: 70; pointer-events: none;
+  /* viewport units: the box must not change when the scrollbar appears after the intro (CLS) */
+  position: fixed; left: -50vw; top: -50lvh; width: 200vw; height: 200lvh; z-index: 70; pointer-events: none;
   opacity: .07;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .85 0 0 0 0 .7 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grain 1s steps(4) infinite;
@@ -523,10 +526,12 @@ section { position: relative; }
   color: var(--bone);
 }
 /* the "hammer strike": JS adds .is-cold before the heading enters, .is-struck when it does */
-[data-forge] { transition: --w var(--dur-3) var(--ease-hammer), color calc(var(--dur-3) * 1.6) var(--ease-out), text-shadow calc(var(--dur-3) * 1.6) var(--ease-out), filter var(--dur-2); }
-[data-forge].is-cold { --w: 50; color: var(--ash); filter: blur(2px); }
+/* the narrow cold state is a scale, not a narrower wdth: re-wrapping the lines would shift the page (CLS) */
+[data-forge] { transform-origin: 0 50%; transition: scale var(--dur-3) var(--ease-hammer), color calc(var(--dur-3) * 1.6) var(--ease-out), text-shadow calc(var(--dur-3) * 1.6) var(--ease-out), filter var(--dur-2); }
+.cta__title[data-forge] { transform-origin: 50% 50%; }
+[data-forge].is-cold { scale: .55 1; color: var(--ash); filter: blur(2px); }
 [data-forge].is-struck {
-  --w: 112; filter: none;
+  filter: none;
   animation: cool-down 2.2s ease-out forwards;
 }
 @keyframes cool-down {
