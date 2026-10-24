@@ -348,16 +348,21 @@ html.has-cursor, html.has-cursor a, html.has-cursor button, html.has-cursor [dat
 }
 /* the molten flow: a wide gradient layer sliding underneath on the compositor (transform), the same
    picture as the old background-position loop, which repainted every visible button on every frame */
-.btn--molten::after {
-  content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 220%; z-index: -1;
+/* WebKit does not clip a transformed child to the parent's border-radius (iOS showed a square slab),
+   so the sliding layer lives in its own clip-path'd box; the button keeps its outer glow */
+.btn > .btn__melt {
+  position: absolute; inset: 0; z-index: 0; border-radius: inherit;
+  overflow: hidden; clip-path: inset(0 round 999px);
+}
+.btn__melt::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 220%;
   background: var(--molten);
   animation: molten-slide 6s linear infinite;
-  pointer-events: none;
 }
 @keyframes molten-slide { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-54.55%); } }
 .btn--molten::before {
   /* white-hot sheen that sweeps across on hover */
-  content: ""; position: absolute; inset: 0; border-radius: inherit; z-index: 0;
+  content: ""; position: absolute; inset: 0; border-radius: inherit; z-index: 1;
   background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / .7) 50%, transparent 70%);
   background-size: 250% 100%; background-position: 130% 0;
   transition: background-position var(--dur-3) var(--ease-out);
@@ -374,7 +379,7 @@ html.has-cursor, html.has-cursor a, html.has-cursor button, html.has-cursor [dat
 }
 .btn--ghost:hover { border-color: var(--gold); color: var(--white-hot); }
 .nav__cta { --pad-y: 10px; --pad-x: 18px; }
-@media (max-width: 420px) { .nav__cta span { display: none; } .nav__cta { --pad-x: 12px; } }
+@media (max-width: 420px) { .nav__cta span:not(.btn__melt) { display: none; } .nav__cta { --pad-x: 12px; } }
 
 /* =====================================================================
    HERO
