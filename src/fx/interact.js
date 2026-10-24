@@ -104,6 +104,18 @@ export function initCounters() {
   });
 }
 
+/**
+ * Looping CSS animations (scan laser, tile float and rim, molten buttons, the WhatsApp ring…) keep
+ * invalidating style every frame even off screen. Pause each block's loops while it is out of view.
+ */
+export function initOffscreenPause() {
+  if (!("IntersectionObserver" in window)) return;
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => e.target.classList.toggle("is-off", !e.isIntersecting));
+  }, { rootMargin: "120px 0px" });
+  document.querySelectorAll("main > section, main > .marquee, body > footer").forEach((el) => io.observe(el));
+}
+
 /** Touch screens have no hover: a card "heats up" while it crosses the middle of the screen. */
 export function initTouchHeat() {
   if (state.pointerFine || !("IntersectionObserver" in window)) return;

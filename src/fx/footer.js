@@ -42,9 +42,10 @@ export function initFooterGiant() {
     box.style.setProperty("--my", "50%");
     return null;
   }
+  let w = box.clientWidth, h = box.clientHeight;
+  if ("ResizeObserver" in window) new ResizeObserver(() => { w = box.clientWidth; h = box.clientHeight; }).observe(box);
   return (s) => {
     if (!visible) return;
-    const w = box.clientWidth, h = box.clientHeight;
     box.style.setProperty("--mx", `${w * (0.5 + 0.42 * Math.sin(s.time * 0.7))}px`);
     box.style.setProperty("--my", `${h * (0.55 + 0.12 * Math.sin(s.time * 1.3))}px`);
   };

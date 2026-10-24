@@ -92,7 +92,8 @@ export class Sparks {
     for (let i = this.p.length - 1; i >= 0; i--) {
       const q = this.p[i];
       q.life += dt;
-      if (q.life >= q.max || q.y > innerHeight + 40 || q.y < -60) { this.p.splice(i, 1); continue; }
+      // state.vh, not innerHeight: reading innerHeight in a frame can force a style + layout flush
+      if (q.life >= q.max || q.y > s.vh + 40 || q.y < -60) { this.p.splice(i, 1); continue; }
       q.vy += q.g * dt;
       q.vx *= q.drag; q.vy *= q.drag;
       if (q.kind === "ember") q.vx += Math.sin(s.time * 2 + q.seed) * 8 * dt;
