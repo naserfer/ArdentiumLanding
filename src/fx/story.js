@@ -14,6 +14,8 @@ import { gsap, ScrollTrigger } from "./gsap.js";
 
 export const FINE_Q = "(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)";
 const REDUCED_Q = "(prefers-reduced-motion: reduce)";
+/** centre of the bowl of the italic "d", as a fraction of the glyph's inline box */
+const DOOR_X = 0.5, DOOR_Y = 0.52;
 
 const html = document.documentElement;
 const $ = (s, r = document) => r.querySelector(s);
@@ -42,22 +44,34 @@ function offsetIn(el, ancestor) {
 
 function initChambers() {
   const chambers = $$(".ch");
+  const n = Math.max(1, chambers.length - 1);
   chambers.forEach((c, i) => {
     // earlier chambers fly past the camera in front of the ones arriving behind them
     c.style.setProperty("--z", String(29 - i));
     c.dataset.story = "";
+    // arrival temperature: cold steel (blue-grey) → red heat → white heat
+    const t = i / n;
+    const u = Math.min(1, t / 0.5), w = Math.max(0, (t - 0.5) / 0.5);
+    const hue = t < 0.5 ? 180 - u * 198 : -18 + w * 12;
+    const sep = t < 0.5 ? 0.4 + u * 0.6 : 1;
+    const sat = t < 0.5 ? 0.5 + u * 3.7 : 4.2 - w * 2.4;
+    const bri = t < 0.5 ? 0.5 + u * 0.1 : 0.6 + w * 1.7;
+    c.style.setProperty("--hue", `${hue.toFixed(1)}deg`);
+    c.style.setProperty("--sep", sep.toFixed(2));
+    c.style.setProperty("--sat", sat.toFixed(2));
+    c.style.setProperty("--bri", bri.toFixed(2));
   });
   const views = $$(".ch__view");
   const measure = () => views.forEach((v) => v.style.setProperty("--vh-h", `${v.offsetHeight}px`));
   measure();
   new ResizeObserver(measure).observe(document.body);
 
-  // the hero dives into the middle of "vanguardia"
-  const hero = $("#top"), em = $("#heroTitle em");
+  // the hero is entered through the counter (the closed bowl) of the "d" of "vanguardia"
+  const hero = $("#top"), door = $("#heroTitle .hero__door") || $("#heroTitle em");
   const dive = () => {
-    const o = offsetIn(em, hero);
-    const cx = o.x + em.offsetWidth * 0.5, cy = o.y + em.offsetHeight * 0.55;
-    for (const el of $$(":scope > .hero__gl, :scope > .hero__scrim, :scope > .hero__inner", hero)) {
+    const o = offsetIn(door, hero);
+    const cx = o.x + door.offsetWidth * DOOR_X, cy = o.y + door.offsetHeight * DOOR_Y;
+    for (const el of $$(":scope > .hero__gl, :scope > .hero__inner", hero)) {
       const b = offsetIn(el, hero);
       el.style.setProperty("--dive-x", `${cx - b.x}px`);
       el.style.setProperty("--dive-y", `${cy - b.y}px`);

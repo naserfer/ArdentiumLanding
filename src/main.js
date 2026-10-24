@@ -12,6 +12,7 @@ import { runPreloader } from "./fx/preloader.js";
 import { initScrollFx } from "./fx/scroll.js";
 import { initReveal, initForgeHeadings } from "./fx/reveal.js";
 import { initStory } from "./fx/story.js";
+import { initTunnel } from "./fx/tunnel.js";
 import { initMagnetic, initScramble, initTilt, initSpot, initCounters, initTouchHeat, initOffscreenPause } from "./fx/interact.js";
 import { initLightbox } from "./fx/lightbox.js";
 import { initFooterGiant } from "./fx/footer.js";
@@ -128,6 +129,7 @@ try { initStory(); } catch (err) {
   document.documentElement.classList.remove("ch-on", "st-live");
   console.error(err);
 }
+initTunnel(document.getElementById("tunnel"));
 initReveal();
 initForgeHeadings(sparks);
 const cursorTick = initCursor();

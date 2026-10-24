@@ -1219,24 +1219,27 @@ html.ch-on .ch {
 html.ch-on .ch::after { content: ""; display: block; height: var(--hold, 60vh); }
 html.ch-on .ch__view {
   /* tall content scrolls up naturally, then holds bottom‑aligned (--vh-h = own height, set by story.js) */
-  position: sticky; top: min(0px, calc(100vh - var(--vh-h, 100vh)));
-  min-height: 100vh; display: grid; align-content: center;
+  position: sticky; top: min(0px, calc(100dvh - var(--vh-h, 100dvh)));
+  min-height: 100svh; display: grid; align-content: center;
   padding-top: calc(var(--nav-h) + 12px); padding-bottom: 24px;
-  transform-origin: 50% 50vh;
+  transform-origin: 50% 50svh;
   animation: ch-hold-in linear both, ch-in cubic-bezier(.16, .8, .3, 1) both;
   animation-timeline: --ch, --ch;
   animation-range: entry 0% entry 100%, entry 0% entry 100%;
 }
 html.ch-on .ch__inner {
-  transform-origin: 50% max(50%, calc(100% - 50vh + 24px));
+  transform-origin: 50% max(50%, calc(100% - 50svh + 24px));
   animation: ch-hold-out linear both, ch-out cubic-bezier(.55, 0, .85, .35) both;
   animation-timeline: --ch, --ch;
   animation-range: exit 0% exit 100%, exit 0% exit 100%;
 }
-@keyframes ch-hold-in { from { translate: 0 -100vh; } to { translate: 0 0; } }
-@keyframes ch-hold-out { from { translate: 0 0; } to { translate: 0 100vh; } }
+/* the compensation must equal the timeline's range: the scrollport, which on iOS follows the toolbar */
+@keyframes ch-hold-in { from { translate: 0 -100dvh; } to { translate: 0 0; } }
+@keyframes ch-hold-out { from { translate: 0 0; } to { translate: 0 100dvh; } }
+/* each chamber arrives at its own temperature (--hue/--sat/--bri per chamber, set by story.js):
+   the first ones cold steel, the deep ones white-hot */
 @keyframes ch-in {
-  from { scale: .38; opacity: 0; filter: blur(12px) brightness(.35) sepia(1) saturate(4) hue-rotate(-18deg); }
+  from { scale: .38; opacity: 0; filter: blur(12px) brightness(var(--bri, .35)) sepia(var(--sep, 1)) saturate(var(--sat, 4)) hue-rotate(var(--hue, -18deg)); }
   55% { opacity: 1; }
   to { scale: 1; opacity: 1; filter: none; }
 }
@@ -1248,27 +1251,59 @@ html.ch-on .ch__inner {
 /* keyboard focus inside a chamber: show it plainly, never half in depth */
 html.ch-on .ch:has(:focus-visible) .ch__view, html.ch-on .ch:has(:focus-visible) .ch__inner { animation: none; }
 
-/* the hero: you dive into "vanguardia" (origin set by story.js) and through the forge mouth */
-html.ch-on .hero { height: 100vh; min-height: 0; overflow: visible; z-index: 30; view-timeline: --hero block; background: none; }
-html.ch-on .hero::after {
-  animation: ch-hold-out linear both, ch-fade-out linear both;
+/* the hero: you go in through the counter of the "d" of "vanguardia" (origin set by story.js);
+   on the other side of the letter is the forge. svh: the hero never outgrows the scrollport,
+   so its exit starts at the very first pixel of scroll on iOS too */
+html.ch-on .hero { height: 100svh; min-height: 0; overflow: visible; z-index: 30; view-timeline: --hero block; background: none; }
+html.ch-on .hero::after, html.ch-on .hero > .hero__scrim {
+  animation: hero-hold linear both, ch-fade-out linear both;
   animation-timeline: --hero, --hero;
-  animation-range: exit 0% exit 100%, exit 0% exit 60%;
+  animation-range: exit 0% exit 100%, exit 0% exit 45%;
 }
 @keyframes ch-fade-out { to { opacity: 0; } }
-html.ch-on .hero > .hero__gl, html.ch-on .hero > .hero__scrim, html.ch-on .hero > .hero__inner {
+@keyframes hero-hold { from { translate: 0 0; } to { translate: 0 100svh; } }
+html.ch-on .hero > .hero__gl, html.ch-on .hero > .hero__inner {
   transform-origin: var(--dive-x, 50%) var(--dive-y, 50%);
-  animation: ch-hold-out linear both, hero-dive cubic-bezier(.5, 0, .75, .3) both;
+  animation: hero-hold linear both, hero-door linear both;
   animation-timeline: --hero, --hero;
   animation-range: exit 0% exit 100%, exit 0% exit 100%;
 }
-html.ch-on .hero > .hero__gl { animation-name: ch-hold-out, hero-dive-gl; }
-@keyframes hero-dive { 70% { opacity: 0; } to { scale: 7; opacity: 0; filter: blur(6px); } }
-@keyframes hero-dive-gl { 60% { opacity: 1; } to { scale: 2.6; opacity: 0; filter: brightness(2.4); } }
+html.ch-on .hero > .hero__gl { animation-name: hero-hold, hero-door-gl; }
+/* piecewise exponential: flying forward at a steady speed */
+@keyframes hero-door {
+  0% { scale: 1; } 25% { scale: 1.7; } 45% { scale: 3.6; } 62% { scale: 9; }
+  76% { scale: 24; opacity: 1; } 88% { scale: 60; opacity: 1; } 100% { scale: 120; opacity: 0; }
+}
+@keyframes hero-door-gl {
+  0% { scale: 1; filter: none; } 70% { scale: 1.5; opacity: 1; filter: brightness(1.5) saturate(1.2); }
+  100% { scale: 2.4; opacity: 0; filter: brightness(3); }
+}
+/* the ember tunnel: sparks streaming past the camera, drawn by tunnel.js */
+.tunnel { position: fixed; left: 0; top: 0; width: 100%; height: 100lvh; z-index: 32; pointer-events: none; mix-blend-mode: screen; }
+html:not(.ch-on) .tunnel { display: none; }
+
+/* 1538 °C, typed: the melting point of iron. The page melts for a moment. */
+html.is-melt main { animation: melt 2.8s cubic-bezier(.3, 0, .2, 1) both; }
+@keyframes melt {
+  0% { filter: none; }
+  18% { filter: brightness(1.9) sepia(1) saturate(5) hue-rotate(-22deg) contrast(1.15); }
+  45% { filter: brightness(3.2) sepia(.6) saturate(3) blur(1.5px) contrast(1.3); }
+  100% { filter: none; }
+}
+.melt-note {
+  position: fixed; left: 50%; bottom: clamp(24px, 6vh, 64px); z-index: 80; translate: -50% 20px;
+  padding: 14px 22px; border-radius: 999px; pointer-events: none; opacity: 0;
+  font-family: var(--f-mono); font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
+  color: var(--carbon); background: linear-gradient(90deg, #ffb347, #fff2d6, #ff7a1a);
+  box-shadow: 0 0 40px rgb(255 140 40 / .6);
+  transition: opacity .4s, translate .6s var(--ease-out);
+}
+.melt-note.is-on { opacity: 1; translate: -50% 0; }
+
 /* after the last chamber the page rises over it like a curtain */
 html.ch-on .team.ch ~ * { position: relative; z-index: 31; background: var(--carbon); }
 html.ch-on .ch--band .ch__view { padding-inline: 0; }
-html.ch-on .ch--band .marquee { border-block: 0; }
+html.ch-on .ch--band .marquee { border-block: 0; background: none; }
 
 /* chamber layouts */
 html.ch-on .case { height: auto; }
