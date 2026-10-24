@@ -34,8 +34,11 @@ export class Sparks {
 
   resize() {
     this.dpr = Math.min(devicePixelRatio || 1, 1.5);
-    this.canvas.width = Math.round(innerWidth * this.dpr);
-    this.canvas.height = Math.round(innerHeight * this.dpr);
+    // the box is 100lvh, so the address bar sliding does not change it; setting the size clears the canvas
+    const w = Math.round((this.canvas.clientWidth || innerWidth) * this.dpr);
+    const h = Math.round((this.canvas.clientHeight || innerHeight) * this.dpr);
+    if (w !== this.canvas.width) this.canvas.width = w;
+    if (h !== this.canvas.height) this.canvas.height = h;
   }
 
   spawn(o) {

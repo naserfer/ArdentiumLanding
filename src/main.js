@@ -75,17 +75,33 @@ addEventListener("pointermove", (e) => {
   if (ctaRect && e.clientY >= ctaRect.top && e.clientY <= ctaRect.bottom) forge2.pointer(e.clientX, e.clientY);
 }, { passive: true });
 
-addEventListener("pointerdown", (e) => {
-  if (intro || e.button !== 0 || e.target.closest("a, button, input, textarea, select, label")) return;
-  const inHero = heroVisible && e.clientY >= heroRect.top && e.clientY <= heroRect.bottom;
-  const inCta = !!ctaRect && e.clientY >= ctaRect.top && e.clientY <= ctaRect.bottom;
-  if (inHero) forge.hammer(e.clientX, e.clientY);
-  if (inCta && forge2.ok) forge2.hammer(e.clientX, e.clientY);
-  if (sparks) sparks.burst(e.clientX, e.clientY, inHero || inCta ? 46 : 18, inHero || inCta ? 1 : 0.6);
-  if (inHero && !state.reduced) {
+const strike = (x, y, shake) => {
+  const inHero = heroVisible && y >= heroRect.top && y <= heroRect.bottom;
+  const inCta = !!ctaRect && y >= ctaRect.top && y <= ctaRect.bottom;
+  if (inHero) forge.hammer(x, y);
+  if (inCta && forge2.ok) forge2.hammer(x, y);
+  if (sparks) sparks.burst(x, y, inHero || inCta ? 46 : 18, inHero || inCta ? 1 : 0.6);
+  if (shake && inHero && !state.reduced) {
     hero.classList.remove("is-shake"); void hero.offsetWidth; hero.classList.add("is-shake");
   }
-});
+};
+
+// touch: a finger going down is usually the start of a scroll, so only a real tap (short, still,
+// page not scrolled) strikes, and it never shakes the screen
+let tap = null;
+addEventListener("pointerdown", (e) => {
+  if (intro || e.button !== 0 || e.target.closest("a, button, input, textarea, select, label")) return;
+  if (e.pointerType === "mouse") { strike(e.clientX, e.clientY, true); return; }
+  tap = { id: e.pointerId, x: e.clientX, y: e.clientY, t: e.timeStamp, sy: scrollY };
+}, { passive: true });
+addEventListener("pointerup", (e) => {
+  const t = tap;
+  tap = null;
+  if (!t || t.id !== e.pointerId || intro) return;
+  if (e.timeStamp - t.t > 300 || Math.hypot(e.clientX - t.x, e.clientY - t.y) > 10 || scrollY !== t.sy) return;
+  strike(e.clientX, e.clientY, false);
+}, { passive: true });
+addEventListener("pointercancel", () => { tap = null; }, { passive: true });
 
 // molten buttons throw a few sparks on hover
 if (sparks && state.pointerFine) {

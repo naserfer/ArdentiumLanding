@@ -86,11 +86,13 @@ export function initScrollFx() {
       watchVisible(track, (v) => { vis = v; }, "100px");
       updaters.push((s) => {
         if (!vis) return;
-        const speed = base + Math.min(Math.abs(s.scrollVel) * 26, 1300);
-        x -= speed * s.dt * (s.scrollDir >= 0 ? 1 : -1) * dir;
+        // touch: steady drift, no speed boost or skew (they read as the screen shaking under the finger)
+        const vel = state.pointerFine ? s.scrollVel : 0;
+        const speed = base + Math.min(Math.abs(vel) * 26, 1300);
+        x -= speed * s.dt * (s.scrollDir >= 0 || !state.pointerFine ? 1 : -1) * dir;
         if (x <= -w) x += w;
         if (x > 0) x -= w;
-        const skew = clamp(s.scrollVel * -0.35 * dir, -10, 10);
+        const skew = clamp(vel * -0.35 * dir, -10, 10);
         track.style.transform = `translate3d(${x}px,0,0) skewX(${skew}deg)`;
       });
     });
