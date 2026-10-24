@@ -125,7 +125,7 @@ initLightbox();
 const giantTick = initFooterGiant();
 try { initStory(); } catch (err) {
   // without the story layer every section is still complete and in order
-  document.documentElement.classList.remove("st-pin", "st-live");
+  document.documentElement.classList.remove("ch-on", "st-live");
   console.error(err);
 }
 initReveal();

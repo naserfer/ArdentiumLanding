@@ -77,7 +77,7 @@ export function initReveal() {
   // threshold 0: a stage that starts fully clipped reports an intersection ratio of 0, never 0.12
   }, { threshold: 0, rootMargin: "0px 0px -15% 0px" });
   CUTS.forEach((sel) => document.querySelectorAll(sel).forEach((el) => {
-    if (!below(el)) return;
+    if (!below(el) || el.closest("[data-story]")) return;
     el.classList.add("is-cutting");
     cut.observe(el);
   }));

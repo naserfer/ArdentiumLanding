@@ -179,9 +179,9 @@ export function initScrollFx() {
     updaters.push((s) => {
       const r = sb.r;
       if (!r) return;
-      // pinned (html.st-pin): the rail fills over the section's sticky stretch, full a bit before release
+      // chamber (html.ch-on): the rail fills while the chamber holds still, full a bit before it leaves
       const q = sb.q;
-      const p = html.classList.contains("st-pin")
+      const p = html.classList.contains("ch-on")
         ? clamp(-q.top / ((q.height - s.vh) * 0.85))
         : clamp((s.vh * 0.62 - r.top) / r.height);
       const ps = p.toFixed(4);

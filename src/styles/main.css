@@ -1199,40 +1199,102 @@ html.is-loading .wa-float, .wa-float.is-away { opacity: 0; transform: scale(.6);
 .is-in { opacity: 1; transform: none; transition: opacity var(--dur-3) var(--ease-out), transform var(--dur-3) var(--ease-out); transition-delay: var(--d, 0s); }
 
 /* =====================================================================
-   SCROLLYTELLING (story.js). html.st-pin = pointer: fine, motion allowed, screen ≥ 1024 × 760;
-   set before first paint by the head script. Pins are sticky stages inside tall sections.
+   DEPTH JOURNEY — "entering" the site. html.ch-on (head script: motion allowed + CSS scroll-driven
+   animations). Every .ch is a chamber: its .ch__view holds still on screen and arrives from the back
+   of the furnace (entry), then its .ch__inner flies past the camera (exit) while the next chamber
+   arrives behind it. Scroll-driven animations run in sync with the scroll itself, so touch included.
+   The view's own scrolling is cancelled by a linear translate (entry: it rises 100vh, exit: it leaves
+   100vh), which is what keeps it still while it moves in depth.
    ===================================================================== */
 .case__bg { display: none; }
 [data-story]:focus-visible, [data-story]:has(:focus-visible) { opacity: 1 !important; }
 
-html.st-pin .name { height: 320vh; padding-block: 0; }
-html.st-pin .name__stage {
-  position: sticky; top: 0; height: 100vh;
-  align-content: center; padding-top: var(--nav-h);
-  perspective: 1200px;
+html.ch-on main { overflow: clip; }
+html.ch-on .works { padding-top: 0; }
+html.ch-on .ch {
+  position: relative; z-index: var(--z, 20);
+  view-timeline: --ch block;
+  padding-block: 0;
 }
-html.st-pin.st-live .manifesto { display: grid; }
-html.st-pin.st-live .manifesto .ph { grid-area: 1 / 1; display: block; transform-origin: 0 60%; }
+html.ch-on .ch::after { content: ""; display: block; height: var(--hold, 60vh); }
+html.ch-on .ch__view {
+  /* tall content scrolls up naturally, then holds bottom‑aligned (--vh-h = own height, set by story.js) */
+  position: sticky; top: min(0px, calc(100vh - var(--vh-h, 100vh)));
+  min-height: 100vh; display: grid; align-content: center;
+  padding-top: calc(var(--nav-h) + 12px); padding-bottom: 24px;
+  transform-origin: 50% 50vh;
+  animation: ch-hold-in linear both, ch-in cubic-bezier(.16, .8, .3, 1) both;
+  animation-timeline: --ch, --ch;
+  animation-range: entry 0% entry 100%, entry 0% entry 100%;
+}
+html.ch-on .ch__inner {
+  transform-origin: 50% max(50%, calc(100% - 50vh + 24px));
+  animation: ch-hold-out linear both, ch-out cubic-bezier(.55, 0, .85, .35) both;
+  animation-timeline: --ch, --ch;
+  animation-range: exit 0% exit 100%, exit 0% exit 100%;
+}
+@keyframes ch-hold-in { from { translate: 0 -100vh; } to { translate: 0 0; } }
+@keyframes ch-hold-out { from { translate: 0 0; } to { translate: 0 100vh; } }
+@keyframes ch-in {
+  from { scale: .38; opacity: 0; filter: blur(12px) brightness(.35) sepia(1) saturate(4) hue-rotate(-18deg); }
+  55% { opacity: 1; }
+  to { scale: 1; opacity: 1; filter: none; }
+}
+@keyframes ch-out {
+  from { scale: 1; opacity: 1; filter: none; }
+  45% { opacity: 0; }
+  to { scale: 3.2; opacity: 0; filter: blur(14px) brightness(2.2); }
+}
+/* keyboard focus inside a chamber: show it plainly, never half in depth */
+html.ch-on .ch:has(:focus-visible) .ch__view, html.ch-on .ch:has(:focus-visible) .ch__inner { animation: none; }
 
-html.st-pin .case__bg {
-  display: block; position: absolute; right: clamp(16px, 3vw, 48px); top: 50%; z-index: -1;
-  translate: 0 -50%; pointer-events: none; user-select: none;
-  font-family: var(--f-display); font-weight: 900; font-variation-settings: "wdth" 140;
-  font-size: clamp(12rem, 26vw, 26rem); line-height: .8; letter-spacing: -.05em;
-  color: transparent; -webkit-text-stroke: 1px rgb(243 233 220 / .07);
+/* the hero: you dive into "vanguardia" (origin set by story.js) and through the forge mouth */
+html.ch-on .hero { height: 100vh; min-height: 0; overflow: visible; z-index: 30; view-timeline: --hero block; background: none; }
+html.ch-on .hero::after {
+  animation: ch-hold-out linear both, ch-fade-out linear both;
+  animation-timeline: --hero, --hero;
+  animation-range: exit 0% exit 100%, exit 0% exit 60%;
 }
-html.st-pin .case__stick { isolation: isolate; }
+@keyframes ch-fade-out { to { opacity: 0; } }
+html.ch-on .hero > .hero__gl, html.ch-on .hero > .hero__scrim, html.ch-on .hero > .hero__inner {
+  transform-origin: var(--dive-x, 50%) var(--dive-y, 50%);
+  animation: ch-hold-out linear both, hero-dive cubic-bezier(.5, 0, .75, .3) both;
+  animation-timeline: --hero, --hero;
+  animation-range: exit 0% exit 100%, exit 0% exit 100%;
+}
+html.ch-on .hero > .hero__gl { animation-name: ch-hold-out, hero-dive-gl; }
+@keyframes hero-dive { 70% { opacity: 0; } to { scale: 7; opacity: 0; filter: blur(6px); } }
+@keyframes hero-dive-gl { 60% { opacity: 1; } to { scale: 2.6; opacity: 0; filter: brightness(2.4); } }
+/* after the last chamber the page rises over it like a curtain */
+html.ch-on .team.ch ~ * { position: relative; z-index: 31; background: var(--carbon); }
+html.ch-on .ch--band .ch__view { padding-inline: 0; }
+html.ch-on .ch--band .marquee { border-block: 0; }
 
-html.st-pin .process { height: 300vh; padding-block: 0; }
-html.st-pin .process__stage {
-  position: sticky; top: 0; height: 100vh;
-  align-items: center; padding-top: var(--nav-h);
+/* chamber layouts */
+html.ch-on .case { height: auto; }
+html.ch-on .case__stick { position: static; min-height: 0; padding-block: 0; }
+html.ch-on .process .sec-head { position: static; }
+html.ch-on.st-live .manifesto { display: grid; }
+html.ch-on.st-live .manifesto .ph { grid-area: 1 / 1; display: block; transform-origin: 0 60%; }
+@media (max-width: 860px) { html.ch-on .name__tile-wrap { max-width: 210px; } }
+@media (min-width: 1024px) {
+  html.ch-on .case__bg {
+    display: block; position: absolute; right: clamp(16px, 3vw, 48px); top: 50%; z-index: -1;
+    translate: 0 -50%; pointer-events: none; user-select: none;
+    font-family: var(--f-display); font-weight: 900; font-variation-settings: "wdth" 140;
+    font-size: clamp(12rem, 26vw, 26rem); line-height: .8; letter-spacing: -.05em;
+    color: transparent; -webkit-text-stroke: 1px rgb(243 233 220 / .07);
+  }
+  html.ch-on .case__stick { position: relative; isolation: isolate; }
+  html.ch-on .cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  html.ch-on .card { min-height: 0; padding: clamp(20px, 2vw, 28px); }
+  html.ch-on .card__ico { margin-bottom: 4px; }
+  html.ch-on .services .sec-head { margin-bottom: clamp(28px, 4vh, 56px); }
+  html.ch-on .step { padding-block: clamp(12px, 1.9vh, 22px); }
+  html.ch-on .step::before { top: calc(clamp(12px, 1.9vh, 22px) + .55em); }
+  html.ch-on .step h3 { font-size: clamp(1.4rem, 1rem + 1.4vw, 2.1rem); }
+  html.ch-on .step p { margin-top: 6px; }
 }
-html.st-pin .process .sec-head { position: static; }
-html.st-pin .step { padding-block: clamp(12px, 1.9vh, 22px); }
-html.st-pin .step::before { top: calc(clamp(12px, 1.9vh, 22px) + .55em); }
-html.st-pin .step h3 { font-size: clamp(1.4rem, 1rem + 1.4vw, 2.1rem); }
-html.st-pin .step p { margin-top: 6px; }
 
 /* =====================================================================
    REDUCED MOTION

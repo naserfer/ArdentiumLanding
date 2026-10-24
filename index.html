@@ -325,8 +325,9 @@
       var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
       h.classList.add("js");
       if (!reduce) h.classList.add("is-loading");
-      // pinned sections get their tall layout before first paint (keep in sync with PIN_Q in story.js)
-      if (window.matchMedia && matchMedia("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (min-width: 1024px) and (min-height: 760px)").matches) h.classList.add("st-pin");
+      // depth journey ("entering" each section) before first paint; it runs on CSS scroll-driven
+      // animations (compositor‑synced, so no jitter on touch); without them the page stays a plain scroll
+      if (!reduce && window.CSS && CSS.supports("animation-timeline: view()") && innerHeight >= 560) h.classList.add("ch-on");
       var check = function () {
         if (window.__ardentiumDone || !h.classList.contains("is-loading") && !h.classList.contains("is-intro")) return;
         // the intro beats every frame; while it is alive (and not absurdly late) let it finish
@@ -420,18 +421,19 @@
     </section>
 
     <!-- ============ MARQUEE ============ -->
-    <div class="marquee" aria-hidden="true">
+    <div class="ch ch--band" style="--hold: 25vh" aria-hidden="true"><div class="ch__view"><div class="marquee ch__inner">
       <div class="marquee__track" id="marquee">
         <span>Vanguardia</span><b></b><span>Software a medida</span><b></b><span>SaaS</span><b></b><span>Apps de escritorio</span><b></b><span>Apps móviles</span><b></b><span>IA y automatización</span><b></b>
       </div>
       <div class="marquee__track marquee__track--stack" id="marquee2">
         <span>TypeScript</span><i>/</i><span>React</span><i>/</i><span>Node</span><i>/</i><span>Rust</span><i>/</i><span>Tauri</span><i>/</i><span>SQLite</span><i>/</i><span>PostgreSQL</span><i>/</i><span>Supabase</span><i>/</i><span>React Native</span><i>/</i><span>Agentes IA</span><i>/</i><span>WhatsApp API</span><i>/</i><span>ESC/POS</span><i>/</i>
       </div>
-    </div>
+    </div></div></div>
 
     <!-- ============ EL NOMBRE ============ -->
-    <section class="name wrap" id="nombre" aria-labelledby="nombreTitle">
-      <div class="name__stage">
+    <section class="name wrap ch" id="nombre" aria-labelledby="nombreTitle" style="--hold: 240vh">
+      <div class="ch__view">
+      <div class="name__stage ch__inner">
       <div class="name__tile-wrap">
         <div class="tile" id="tile" data-tilt>
           <div class="tile__glare"></div>
@@ -448,10 +450,13 @@
         <p class="name__rule">Nacimos en 2026 con una regla simple: <strong>si no empuja el límite, no sale del horno.</strong></p>
       </div>
       </div>
+      </div>
     </section>
 
     <!-- ============ SERVICIOS ============ -->
-    <section class="services wrap" id="servicios" aria-labelledby="servTitle">
+    <section class="services wrap ch" id="servicios" aria-labelledby="servTitle" style="--hold: 70vh">
+      <div class="ch__view">
+      <div class="ch__inner">
       <header class="sec-head">
         <p class="eyebrow">Servicios</p>
         <h2 class="display" id="servTitle" data-forge>Lo que forjamos</h2>
@@ -487,19 +492,26 @@
           <ul class="alloy"><li>Agentes</li><li>WhatsApp</li><li>APIs</li><li>Integraciones</li></ul>
         </article>
       </div>
+      </div>
+      </div>
     </section>
 
     <!-- ============ TRABAJOS ============ -->
     <section class="works" id="trabajos" aria-labelledby="worksTitle">
-      <header class="sec-head wrap">
+      <div class="ch ch--title" style="--hold: 30vh">
+      <div class="ch__view">
+      <header class="sec-head wrap ch__inner">
         <p class="eyebrow">Trabajos</p>
         <h2 class="display" id="worksTitle" data-forge>Coladas recientes</h2>
         <p class="sec-head__sub">Software hecho en Paraguay que ya está en producción. Cada proyecto sale del horno con su número de colada.</p>
       </header>
+      </div>
+      </div>
 
       <!-- KarúBox -->
-      <article class="case case--karu" id="karubox" aria-labelledby="karuTitle">
-        <div class="case__stick wrap">
+      <article class="case case--karu ch" id="karubox" aria-labelledby="karuTitle" style="--hold: 130vh">
+        <div class="ch__view">
+        <div class="case__stick wrap ch__inner">
           <span class="case__bg" aria-hidden="true">001</span>
           <div class="case__info">
             <p class="case__lot"><span>Colada N.º 001</span><span class="tag">Producto propio · SaaS</span></p>
@@ -563,11 +575,13 @@
             </ol>
           </div>
         </div>
+        </div>
       </article>
 
       <!-- MotelApp -->
-      <article class="case case--motel" id="motelapp" aria-labelledby="motelTitle">
-        <div class="case__stick wrap">
+      <article class="case case--motel ch" id="motelapp" aria-labelledby="motelTitle" style="--hold: 130vh">
+        <div class="ch__view">
+        <div class="case__stick wrap ch__inner">
           <span class="case__bg" aria-hidden="true">002</span>
           <div class="case__info">
             <p class="case__lot"><span>Colada N.º 002</span><span class="tag">Sistema de recepción · Escritorio</span></p>
@@ -604,11 +618,13 @@
             </figure>
           </div>
         </div>
+        </div>
       </article>
 
       <!-- Sabor del Chipá -->
-      <article class="case case--chipa" id="sabordelchipa" aria-labelledby="chipaTitle">
-        <div class="case__stick wrap">
+      <article class="case case--chipa ch" id="sabordelchipa" aria-labelledby="chipaTitle" style="--hold: 130vh">
+        <div class="ch__view">
+        <div class="case__stick wrap ch__inner">
           <span class="case__bg" aria-hidden="true">003</span>
           <div class="case__info">
             <p class="case__lot"><span>Colada N.º 003</span><span class="tag">Tienda online · Web</span></p>
@@ -649,12 +665,14 @@
             </figure>
           </div>
         </div>
+        </div>
       </article>
     </section>
 
     <!-- ============ PROCESO ============ -->
-    <section class="process wrap" id="proceso" aria-labelledby="procTitle">
-      <div class="process__stage">
+    <section class="process wrap ch" id="proceso" aria-labelledby="procTitle" style="--hold: 220vh">
+      <div class="ch__view">
+      <div class="process__stage ch__inner">
       <header class="sec-head">
         <p class="eyebrow">Proceso</p>
         <h2 class="display" id="procTitle" data-forge>Del mineral a la pieza</h2>
@@ -668,10 +686,13 @@
         <li class="step"><span class="step__n">05</span><div><h3>Entregar</h3><p>Instalamos, capacitamos y acompañamos. Después, lo seguimos mejorando.</p></div></li>
       </ol>
       </div>
+      </div>
     </section>
 
     <!-- ============ EQUIPO ============ -->
-    <section class="team wrap" id="equipo" aria-labelledby="teamTitle">
+    <section class="team wrap ch" id="equipo" aria-labelledby="teamTitle" style="--hold: 50vh">
+      <div class="ch__view">
+      <div class="ch__inner">
       <header class="sec-head">
         <p class="eyebrow">Equipo</p>
         <h2 class="display" id="teamTitle" data-forge>Quiénes forjan</h2>
@@ -706,6 +727,8 @@
             <span>Hablá con nosotros</span>
           </a>
         </aside>
+      </div>
+      </div>
       </div>
     </section>
 
