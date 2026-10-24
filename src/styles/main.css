@@ -538,10 +538,10 @@ section { position: relative; }
 /* =====================================================================
    EL NOMBRE — element tile + heating manifesto
    ===================================================================== */
-.name {
+.name__stage {
   display: grid; grid-template-columns: minmax(240px, 380px) 1fr; gap: clamp(40px, 7vw, 120px); align-items: center;
 }
-@media (max-width: 860px) { .name { grid-template-columns: 1fr; } .name__tile-wrap { max-width: 320px; } }
+@media (max-width: 860px) { .name__stage { grid-template-columns: 1fr; } .name__tile-wrap { max-width: 320px; } }
 
 .name__tile-wrap { display: grid; gap: 16px; perspective: 900px; }
 .tile {
@@ -609,9 +609,10 @@ section { position: relative; }
   text-wrap: pretty;
 }
 .manifesto .w {
-  /* --heat 0 → ash, .5 → ember glow, 1 → bone */
+  /* --heat 0 → ash, .5 → ember glow, 1 → bone (defaults to bone if no timeline ever drives it) */
+  --heat: 1; --glow: calc(min(var(--heat), 1 - var(--heat)) * 2);
   color: color-mix(in oklab, color-mix(in oklab, #7a655a, var(--ember) calc(min(var(--heat) * 2, 1) * 100%)), var(--bone) calc(max(var(--heat) * 2 - 1, 0) * 100%));
-  text-shadow: 0 0 calc(var(--glow, 0) * 22px) rgb(255 106 26 / calc(var(--glow, 0) * .8));
+  text-shadow: 0 0 calc(var(--glow) * 22px) rgb(255 106 26 / calc(var(--glow) * .8));
 }
 .manifesto em { font-style: italic; }
 .name__rule { color: var(--slag); font-size: var(--fs-lg); max-width: 52ch; }
@@ -620,7 +621,7 @@ section { position: relative; }
 /* =====================================================================
    SERVICES — heat‑spot cards
    ===================================================================== */
-.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; perspective: 1400px; }
 @media (max-width: 760px) { .cards { grid-template-columns: 1fr; } }
 .card {
   --mx: 50%; --my: 50%; --spot: 0;
@@ -631,7 +632,7 @@ section { position: relative; }
   border-radius: var(--r-m);
   background: var(--soot);
   border: 1px solid var(--line);
-  transition: border-color var(--dur-2), transform var(--dur-2) var(--ease-out);
+  transition: border-color var(--dur-2);
 }
 .card::before {
   /* heat spot that follows the cursor */
@@ -920,10 +921,10 @@ html.has-cursor .screen__btn { cursor: none; }
 /* =====================================================================
    PROCESS — molten rail
    ===================================================================== */
-.process { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
+.process__stage { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
 .process .sec-head { position: sticky; top: calc(var(--nav-h) + 40px); margin-bottom: 0; }
 .process .display { font-size: min(clamp(2.3rem, 1rem + 4.2vw, 5rem), 15cqi); }
-@media (max-width: 900px) { .process { grid-template-columns: 1fr; } .process .sec-head { position: static; } }
+@media (max-width: 900px) { .process__stage { grid-template-columns: 1fr; } .process .sec-head { position: static; } }
 .steps { --p: 1; position: relative; display: grid; gap: 0; padding-left: 36px; }
 .steps::before, .steps::after {
   content: ""; position: absolute; left: 6px; top: 12px; bottom: 12px; width: 2px; border-radius: 2px;
@@ -1186,6 +1187,42 @@ html.is-loading .wa-float, .wa-float.is-away { opacity: 0; transform: scale(.6);
 
 .is-pending { opacity: 0; transform: translateY(18px); }
 .is-in { opacity: 1; transform: none; transition: opacity var(--dur-3) var(--ease-out), transform var(--dur-3) var(--ease-out); transition-delay: var(--d, 0s); }
+
+/* =====================================================================
+   SCROLLYTELLING (story.js). html.st-pin = pointer: fine, motion allowed, screen ≥ 1024 × 760;
+   set before first paint by the head script. Pins are sticky stages inside tall sections.
+   ===================================================================== */
+.case__bg { display: none; }
+[data-story]:focus-visible, [data-story]:has(:focus-visible) { opacity: 1 !important; }
+
+html.st-pin .name { height: 320vh; padding-block: 0; }
+html.st-pin .name__stage {
+  position: sticky; top: 0; height: 100vh;
+  align-content: center; padding-top: var(--nav-h);
+  perspective: 1200px;
+}
+html.st-pin.st-live .manifesto { display: grid; }
+html.st-pin.st-live .manifesto .ph { grid-area: 1 / 1; display: block; transform-origin: 0 60%; }
+
+html.st-pin .case__bg {
+  display: block; position: absolute; right: clamp(16px, 3vw, 48px); top: 50%; z-index: -1;
+  translate: 0 -50%; pointer-events: none; user-select: none;
+  font-family: var(--f-display); font-weight: 900; font-variation-settings: "wdth" 140;
+  font-size: clamp(12rem, 26vw, 26rem); line-height: .8; letter-spacing: -.05em;
+  color: transparent; -webkit-text-stroke: 1px rgb(243 233 220 / .07);
+}
+html.st-pin .case__stick { isolation: isolate; }
+
+html.st-pin .process { height: 300vh; padding-block: 0; }
+html.st-pin .process__stage {
+  position: sticky; top: 0; height: 100vh;
+  align-items: center; padding-top: var(--nav-h);
+}
+html.st-pin .process .sec-head { position: static; }
+html.st-pin .step { padding-block: clamp(12px, 1.9vh, 22px); }
+html.st-pin .step::before { top: calc(clamp(12px, 1.9vh, 22px) + .55em); }
+html.st-pin .step h3 { font-size: clamp(1.4rem, 1rem + 1.4vw, 2.1rem); }
+html.st-pin .step p { margin-top: 6px; }
 
 /* =====================================================================
    REDUCED MOTION

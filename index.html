@@ -325,6 +325,8 @@
       var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
       h.classList.add("js");
       if (!reduce) h.classList.add("is-loading");
+      // pinned sections get their tall layout before first paint (keep in sync with PIN_Q in story.js)
+      if (window.matchMedia && matchMedia("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (min-width: 1024px) and (min-height: 760px)").matches) h.classList.add("st-pin");
       var check = function () {
         if (window.__ardentiumDone || !h.classList.contains("is-loading") && !h.classList.contains("is-intro")) return;
         // the intro beats every frame; while it is alive (and not absurdly late) let it finish
@@ -427,6 +429,7 @@
 
     <!-- ============ EL NOMBRE ============ -->
     <section class="name wrap" id="nombre" aria-labelledby="nombreTitle">
+      <div class="name__stage">
       <div class="name__tile-wrap">
         <div class="tile" id="tile" data-tilt>
           <div class="tile__glare"></div>
@@ -439,8 +442,9 @@
       </div>
       <div class="name__text">
         <h2 class="eyebrow" id="nombreTitle">El nombre</h2>
-        <p class="manifesto" id="manifesto">Ardentium viene del latín ardens: lo que arde. Le sumamos -ium, como a los elementos de la tabla periódica. Así nos vemos: un material nuevo, al rojo vivo, que toma la forma exacta de lo que tu negocio necesita.</p>
+        <p class="manifesto" id="manifesto"><span class="ph">Ardentium viene del latín ardens: lo que arde.</span> <span class="ph">Le sumamos -ium, como a los elementos de la tabla periódica.</span> <span class="ph">Así nos vemos: un material nuevo, al rojo vivo, que toma la forma exacta de lo que tu negocio necesita.</span></p>
         <p class="name__rule">Nacimos en 2026 con una regla simple: <strong>si no empuja el límite, no sale del horno.</strong></p>
+      </div>
       </div>
     </section>
 
@@ -494,6 +498,7 @@
       <!-- KarúBox -->
       <article class="case case--karu" id="karubox" aria-labelledby="karuTitle">
         <div class="case__stick wrap">
+          <span class="case__bg" aria-hidden="true">001</span>
           <div class="case__info">
             <p class="case__lot"><span>Colada N.º 001</span><span class="tag">Producto propio · SaaS</span></p>
             <h3 class="case__name" id="karuTitle">KarúBox</h3>
@@ -561,6 +566,7 @@
       <!-- MotelApp -->
       <article class="case case--motel" id="motelapp" aria-labelledby="motelTitle">
         <div class="case__stick wrap">
+          <span class="case__bg" aria-hidden="true">002</span>
           <div class="case__info">
             <p class="case__lot"><span>Colada N.º 002</span><span class="tag">Sistema de recepción · Escritorio</span></p>
             <h3 class="case__name" id="motelTitle">MotelApp</h3>
@@ -601,6 +607,7 @@
       <!-- Sabor del Chipá -->
       <article class="case case--chipa" id="sabordelchipa" aria-labelledby="chipaTitle">
         <div class="case__stick wrap">
+          <span class="case__bg" aria-hidden="true">003</span>
           <div class="case__info">
             <p class="case__lot"><span>Colada N.º 003</span><span class="tag">Tienda online · Web</span></p>
             <h3 class="case__name" id="chipaTitle">Sabor del Chipá</h3>
@@ -645,6 +652,7 @@
 
     <!-- ============ PROCESO ============ -->
     <section class="process wrap" id="proceso" aria-labelledby="procTitle">
+      <div class="process__stage">
       <header class="sec-head">
         <p class="eyebrow">Proceso</p>
         <h2 class="display" id="procTitle" data-forge>Del mineral a la pieza</h2>
@@ -657,6 +665,7 @@
         <li class="step"><span class="step__n">04</span><div><h3>Templar</h3><p>Probamos con casos reales hasta que el sistema aguanta el día a día.</p></div></li>
         <li class="step"><span class="step__n">05</span><div><h3>Entregar</h3><p>Instalamos, capacitamos y acompañamos. Después, lo seguimos mejorando.</p></div></li>
       </ol>
+      </div>
     </section>
 
     <!-- ============ EQUIPO ============ -->

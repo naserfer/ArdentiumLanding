@@ -1,7 +1,7 @@
 /**
  * Scroll‑driven choreography, all computed inside the shared ticker:
- * nav behaviour, the heat gauge (scroll = temperature), the velocity marquee, the manifesto
- * that heats word by word, the two case stages, and the molten process rail.
+ * nav behaviour, the heat gauge (scroll = temperature), the velocity marquee, the two case
+ * stages, and the molten process rail. (The manifesto's word heat lives in story.js.)
  * Layout is only read in the ticker's read phase, and only for blocks that are on screen.
  */
 import { state, clamp, easeInOut, watchVisible, onRead, trackRect } from "./ticker.js";
@@ -98,30 +98,6 @@ export function initScrollFx() {
     });
   }
 
-  /* ---------- manifesto heats word by word ---------- */
-  const man = $("#manifesto");
-  if (man && !state.reduced) {
-    const words = man.textContent.trim().split(/\s+/);
-    man.innerHTML = words.map((w) => `<span class="w">${w}</span> `).join("");
-    const spans = [...man.querySelectorAll(".w")];
-    const N = spans.length, band = 7;
-    const mb = rectWhileVisible(man);
-    updaters.push((s) => {
-      const r = mb.r;
-      if (!r || r.bottom < -50 || r.top > s.vh + 50) return;
-      const p = clamp((s.vh * 0.88 - r.top) / (r.height + s.vh * 0.42));
-      const front = p * (N + band);
-      for (let i = 0; i < N; i++) {
-        const h = clamp((front - i) / band);
-        const el = spans[i];
-        if (el._h === h) continue;
-        el._h = h;
-        el.style.setProperty("--heat", h.toFixed(3));
-        el.style.setProperty("--glow", (1 - Math.abs(h * 2 - 1)).toFixed(3));
-      }
-    });
-  }
-
   /* ---------- case progress helper (sticky stage on desktop, in‑flow on mobile) ---------- */
   const caseProgress = (r, q, s) => {
     if (r.height > s.vh * 1.5) return clamp(-r.top / (r.height - s.vh) / 0.72);
@@ -197,12 +173,17 @@ export function initScrollFx() {
     };
     measure();
     new ResizeObserver(measure).observe(steps);
-    const sb = rectWhileVisible(steps, "100px");
+    const sb = rectWhileVisible(steps, "100px", $("#proceso"));
+    const html = document.documentElement;
     let lastP = "", lastStage = -1;
     updaters.push((s) => {
       const r = sb.r;
       if (!r) return;
-      const p = clamp((s.vh * 0.62 - r.top) / r.height);
+      // pinned (html.st-pin): the rail fills over the section's sticky stretch, full a bit before release
+      const q = sb.q;
+      const p = html.classList.contains("st-pin")
+        ? clamp(-q.top / ((q.height - s.vh) * 0.85))
+        : clamp((s.vh * 0.62 - r.top) / r.height);
       const ps = p.toFixed(4);
       if (ps === lastP) return;
       lastP = ps;

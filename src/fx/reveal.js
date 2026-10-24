@@ -19,7 +19,6 @@ const AUTO = [
   ".step",
   ".founder",
   ".team__stat",
-  ".faq__item",
   ".cta__inner > *:not([data-forge])",
   ".foot > *",
 ];
@@ -37,7 +36,8 @@ export function initReveal() {
   // block → its armed parts
   const groups = new Map();
   els.forEach((el) => {
-    if (el.closest(".hero") || !below(el)) return; // the hero is revealed by the intro sequence
+    // the hero is revealed by the intro sequence; [data-story] elements are scrubbed by story.js
+    if (el.closest(".hero, [data-story]") || !below(el)) return;
     const block = el.parentElement;
     if (!groups.has(block)) groups.set(block, []);
     groups.get(block).push(el);

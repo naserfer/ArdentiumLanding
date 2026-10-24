@@ -11,6 +11,7 @@ import { initCursor } from "./fx/cursor.js";
 import { runPreloader } from "./fx/preloader.js";
 import { initScrollFx } from "./fx/scroll.js";
 import { initReveal, initForgeHeadings } from "./fx/reveal.js";
+import { initStory } from "./fx/story.js";
 import { initMagnetic, initScramble, initTilt, initSpot, initCounters, initTouchHeat, initOffscreenPause } from "./fx/interact.js";
 import { initLightbox } from "./fx/lightbox.js";
 import { initFooterGiant } from "./fx/footer.js";
@@ -122,6 +123,11 @@ initTouchHeat();
 initOffscreenPause();
 initLightbox();
 const giantTick = initFooterGiant();
+try { initStory(); } catch (err) {
+  // without the story layer every section is still complete and in order
+  document.documentElement.classList.remove("st-pin", "st-live");
+  console.error(err);
+}
 initReveal();
 initForgeHeadings(sparks);
 const cursorTick = initCursor();
