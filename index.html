@@ -314,9 +314,10 @@
       ]
     }
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anybody:ital,wdth,wght@0,50..150,100..900;1,50..150,100..900&family=Instrument+Sans:wdth,wght@75..100,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap" />
+  <link rel="preload" href="./assets/fonts/anybody-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="./assets/fonts/anybody-italic-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="./assets/fonts/instrument-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="./assets/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="./src/styles/main.css" />
   <script>
     /* Arm the intro before first paint; if it has not finished after 6 s (JS or WebGL failed), fail open. */
@@ -379,13 +380,34 @@
       <a href="#equipo" data-scramble>Equipo</a>
       <a href="#contacto" data-scramble>Contacto</a>
     </nav>
-    <a class="btn btn--molten nav__cta" data-wa data-magnetic href="https://wa.me/595000000000" target="_blank" rel="noopener">
+    <a class="btn btn--molten nav__cta" data-wa data-magnetic href="https://wa.me/595000000000" target="_blank" rel="noopener" aria-label="Hablemos por WhatsApp">
       <span class="btn__melt" aria-hidden="true"></span>
       <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wa" /></svg>
       <span>Hablemos</span>
     </a>
+    <button class="nav__burger" id="menuBtn" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú">
+      <span aria-hidden="true"></span><span aria-hidden="true"></span>
+    </button>
     <span class="nav__progress" id="navProgress" aria-hidden="true"></span>
   </header>
+
+  <!-- Mobile menu: each stop of the journey with the temperature it is forged at -->
+  <nav class="menu" id="menu" aria-label="Menú" hidden>
+    <ol class="menu__list">
+      <li><a href="#servicios"><span class="menu__t" data-menu-t>°C</span><span class="menu__w">Servicios</span></a></li>
+      <li><a href="#trabajos"><span class="menu__t" data-menu-t>°C</span><span class="menu__w">Trabajos</span></a></li>
+      <li><a href="#proceso"><span class="menu__t" data-menu-t>°C</span><span class="menu__w">Proceso</span></a></li>
+      <li><a href="#equipo"><span class="menu__t" data-menu-t>°C</span><span class="menu__w">Equipo</span></a></li>
+      <li><a href="#preguntas"><span class="menu__t" data-menu-t>°C</span><span class="menu__w">Preguntas</span></a></li>
+      <li><a href="#contacto"><span class="menu__t" data-menu-t>°C</span><span class="menu__w">Contacto</span></a></li>
+    </ol>
+    <a class="btn btn--molten btn--lg menu__cta" data-wa href="https://wa.me/595000000000" target="_blank" rel="noopener">
+      <span class="btn__melt" aria-hidden="true"></span>
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wa" /></svg>
+      <span>Escribinos por WhatsApp</span>
+    </a>
+    <p class="menu__foot"><span>Asunción, PY</span><span>Vanguardia.</span></p>
+  </nav>
 
   <main id="contenido">
     <!-- ============ HERO ============ -->
@@ -601,19 +623,19 @@
           <div class="screens" id="motelStage">
             <figure class="screen screen--3">
               <button class="screen__btn" type="button" data-zoom data-cursor="Ampliar" aria-label="Ampliar captura: análisis del negocio">
-                <img src="./assets/works/motelapp-analisis.webp" alt="Pantalla de análisis de MotelApp con ingresos día a día y estado de habitaciones" width="1600" height="1000" loading="lazy" decoding="async" />
+                <img src="./assets/works/motelapp-analisis.webp" srcset="./assets/works/motelapp-analisis-800.webp 800w, ./assets/works/motelapp-analisis-1200.webp 1200w, ./assets/works/motelapp-analisis.webp 1600w" sizes="(max-width: 860px) 86vw, 44vw" alt="Pantalla de análisis de MotelApp con ingresos día a día y estado de habitaciones" width="1600" height="1000" loading="lazy" decoding="async" />
               </button>
               <figcaption class="screen__tag">Análisis</figcaption>
             </figure>
             <figure class="screen screen--2">
               <button class="screen__btn" type="button" data-zoom data-cursor="Ampliar" aria-label="Ampliar captura: cuenta de una habitación">
-                <img src="./assets/works/motelapp-cuenta.webp" alt="Cuenta de una habitación ocupada en MotelApp con tienda de consumos y total" width="1600" height="1000" loading="lazy" decoding="async" />
+                <img src="./assets/works/motelapp-cuenta.webp" srcset="./assets/works/motelapp-cuenta-800.webp 800w, ./assets/works/motelapp-cuenta-1200.webp 1200w, ./assets/works/motelapp-cuenta.webp 1600w" sizes="(max-width: 860px) 86vw, 44vw" alt="Cuenta de una habitación ocupada en MotelApp con tienda de consumos y total" width="1600" height="1000" loading="lazy" decoding="async" />
               </button>
               <figcaption class="screen__tag">Cuenta</figcaption>
             </figure>
             <figure class="screen screen--1">
               <button class="screen__btn" type="button" data-zoom data-cursor="Ampliar" aria-label="Ampliar captura: tablero de habitaciones">
-                <img src="./assets/works/motelapp-tablero.webp" alt="Tablero de habitaciones de MotelApp con estados libre, ocupada, sucia, reservada y bloqueada" width="1600" height="1000" loading="lazy" decoding="async" />
+                <img src="./assets/works/motelapp-tablero.webp" srcset="./assets/works/motelapp-tablero-800.webp 800w, ./assets/works/motelapp-tablero-1200.webp 1200w, ./assets/works/motelapp-tablero.webp 1600w" sizes="(max-width: 860px) 86vw, 44vw" alt="Tablero de habitaciones de MotelApp con estados libre, ocupada, sucia, reservada y bloqueada" width="1600" height="1000" loading="lazy" decoding="async" />
               </button>
               <figcaption class="screen__tag">Tablero en vivo</figcaption>
               <span class="screen__scan"></span>
@@ -648,19 +670,19 @@
           <div class="screens" id="chipaStage">
             <figure class="screen screen--3">
               <button class="screen__btn" type="button" data-zoom data-cursor="Ampliar" aria-label="Ampliar captura: pedido por WhatsApp">
-                <img src="./assets/works/sabordelchipa-pedido.webp" alt="Panel de pedido de Sabor del Chipá con productos, total y datos de entrega para enviar por WhatsApp" width="1600" height="1000" loading="lazy" decoding="async" />
+                <img src="./assets/works/sabordelchipa-pedido.webp" srcset="./assets/works/sabordelchipa-pedido-800.webp 800w, ./assets/works/sabordelchipa-pedido-1200.webp 1200w, ./assets/works/sabordelchipa-pedido.webp 1600w" sizes="(max-width: 860px) 86vw, 44vw" alt="Panel de pedido de Sabor del Chipá con productos, total y datos de entrega para enviar por WhatsApp" width="1600" height="1000" loading="lazy" decoding="async" />
               </button>
               <figcaption class="screen__tag">Pedido</figcaption>
             </figure>
             <figure class="screen screen--2">
               <button class="screen__btn" type="button" data-zoom data-cursor="Ampliar" aria-label="Ampliar captura: catálogo de variedades">
-                <img src="./assets/works/sabordelchipa-catalogo.webp" alt="Catálogo de Sabor del Chipá con chipá bolita, galletitas y grisines, precios por medio kilo y por kilo" width="1600" height="1000" loading="lazy" decoding="async" />
+                <img src="./assets/works/sabordelchipa-catalogo.webp" srcset="./assets/works/sabordelchipa-catalogo-800.webp 800w, ./assets/works/sabordelchipa-catalogo-1200.webp 1200w, ./assets/works/sabordelchipa-catalogo.webp 1600w" sizes="(max-width: 860px) 86vw, 44vw" alt="Catálogo de Sabor del Chipá con chipá bolita, galletitas y grisines, precios por medio kilo y por kilo" width="1600" height="1000" loading="lazy" decoding="async" />
               </button>
               <figcaption class="screen__tag">Catálogo</figcaption>
             </figure>
             <figure class="screen screen--1">
               <button class="screen__btn" type="button" data-zoom data-cursor="Ampliar" aria-label="Ampliar captura: inicio de la tienda">
-                <img src="./assets/works/sabordelchipa-inicio.webp" alt="Inicio de Sabor del Chipá: del freezer al horno en 20 minutos, con un horno animado y botón para hacer el pedido" width="1600" height="1000" loading="lazy" decoding="async" />
+                <img src="./assets/works/sabordelchipa-inicio.webp" srcset="./assets/works/sabordelchipa-inicio-800.webp 800w, ./assets/works/sabordelchipa-inicio-1200.webp 1200w, ./assets/works/sabordelchipa-inicio.webp 1600w" sizes="(max-width: 860px) 86vw, 44vw" alt="Inicio de Sabor del Chipá: del freezer al horno en 20 minutos, con un horno animado y botón para hacer el pedido" width="1600" height="1000" loading="lazy" decoding="async" />
               </button>
               <figcaption class="screen__tag">Inicio</figcaption>
               <span class="screen__scan"></span>
@@ -834,6 +856,15 @@
       <img id="lightboxImg" src="" alt="" />
       <figcaption id="lightboxCap"></figcaption>
     </figure>
+    <div class="lightbox__nav" id="lightboxNav">
+      <button class="lightbox__step" type="button" data-step="-1" aria-label="Captura anterior">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+      </button>
+      <span class="lightbox__count" id="lightboxCount" aria-live="polite"></span>
+      <button class="lightbox__step" type="button" data-step="1" aria-label="Captura siguiente">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+      </button>
+    </div>
     <button class="lightbox__close" type="button" id="lightboxClose" aria-label="Cerrar">
       <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
     </button>

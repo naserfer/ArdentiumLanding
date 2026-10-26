@@ -8,6 +8,32 @@
 @property --w { syntax: "<number>"; inherits: true; initial-value: 112; }
 @property --heat { syntax: "<number>"; inherits: true; initial-value: 0; }
 
+/* self-hosted (same files and subsets Google Fonts serves): no render-blocking third-party CSS */
+@font-face { font-family: "Anybody"; font-style: normal; font-weight: 100 900; font-stretch: 50% 150%; font-display: swap;
+  src: url("../../assets/fonts/anybody-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Anybody"; font-style: normal; font-weight: 100 900; font-stretch: 50% 150%; font-display: swap;
+  src: url("../../assets/fonts/anybody-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Anybody"; font-style: italic; font-weight: 100 900; font-stretch: 50% 150%; font-display: swap;
+  src: url("../../assets/fonts/anybody-italic-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Anybody"; font-style: italic; font-weight: 100 900; font-stretch: 50% 150%; font-display: swap;
+  src: url("../../assets/fonts/anybody-italic-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Instrument Sans"; font-style: normal; font-weight: 400 700; font-stretch: 75% 100%; font-display: swap;
+  src: url("../../assets/fonts/instrument-sans-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Instrument Sans"; font-style: normal; font-weight: 400 700; font-stretch: 75% 100%; font-display: swap;
+  src: url("../../assets/fonts/instrument-sans-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 400 700; font-display: swap;
+  src: url("../../assets/fonts/jetbrains-mono-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 400 700; font-display: swap;
+  src: url("../../assets/fonts/jetbrains-mono-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+
 :root {
   color-scheme: dark;
 
@@ -78,7 +104,10 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow-x: clip;
 }
-html.is-loading, html.is-loading body { overflow: hidden; }
+/* body clips, never hides: overflow hidden would make it a scroll container, and Safari binds the
+   chambers' view timelines to it during the intro and keeps them there (the first dive never plays) */
+html.is-loading { overflow: hidden; }
+html.is-loading body { overflow: clip; }
 
 img, svg, canvas { display: block; max-width: 100%; }
 a { color: inherit; }
@@ -318,6 +347,72 @@ html.has-cursor, html.has-cursor a, html.has-cursor button, html.has-cursor [dat
   .nav__brand { font-size: 1rem; }
 }
 
+/* ---------- mobile menu: a map of the forge, every stop at its temperature ---------- */
+.nav__burger { display: none; }
+@media (max-width: 820px) {
+  .nav { gap: 10px; }
+  .nav__cta { margin-left: auto; }
+  .nav__burger {
+    display: grid; place-content: center; gap: 7px; flex: none;
+    width: 48px; height: 48px; margin-right: -10px; padding: 0;
+    border: 0; border-radius: 50%; background: none; color: var(--bone); cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+.nav__burger span {
+  display: block; width: 26px; height: 2px; border-radius: 2px; background: currentColor; justify-self: end;
+  transition: translate var(--dur-2) var(--ease-out), rotate var(--dur-2) var(--ease-out), width var(--dur-2) var(--ease-out), background-color var(--dur-1), box-shadow var(--dur-1);
+}
+.nav__burger span:last-child { width: 17px; }
+html.menu-open .nav__burger span { width: 26px; background: var(--gold); box-shadow: 0 0 10px rgb(255 140 40 / .75); }
+html.menu-open .nav__burger span:first-child { translate: 0 4.5px; rotate: 45deg; }
+html.menu-open .nav__burger span:last-child { translate: 0 -4.5px; rotate: -45deg; }
+html.menu-open, html.menu-open body { overflow: hidden; }
+html.menu-open .nav { transform: none; background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; border-bottom-color: transparent; }
+html.menu-open .nav__progress { opacity: 0; }
+
+.menu {
+  position: fixed; inset: 0; z-index: 45;
+  display: flex; flex-direction: column; justify-content: center; gap: clamp(22px, 4.5vh, 44px);
+  padding: calc(var(--nav-h) + env(safe-area-inset-top, 0px)) var(--gutter) calc(24px + env(safe-area-inset-bottom, 0px));
+  background:
+    radial-gradient(130% 55% at 50% 118%, rgb(255 106 26 / .34), rgb(179 38 14 / .12) 45%, transparent 70%),
+    var(--carbon);
+  overflow-y: auto; overscroll-behavior: contain;
+  opacity: 0; visibility: hidden;
+  transition: opacity .4s var(--ease-out), visibility 0s .4s;
+}
+.menu[hidden] { display: none; }
+html.menu-open .menu { opacity: 1; visibility: visible; transition: opacity .4s var(--ease-out); }
+.menu__list { display: grid; }
+.menu__list li { opacity: 0; translate: 0 14px; transition: opacity .5s var(--ease-out), translate .7s var(--ease-out); }
+html.menu-open .menu__list li { opacity: 1; translate: 0 0; }
+.menu__list li:nth-child(2) { transition-delay: 40ms; } .menu__list li:nth-child(3) { transition-delay: 80ms; }
+.menu__list li:nth-child(4) { transition-delay: 120ms; } .menu__list li:nth-child(5) { transition-delay: 160ms; }
+.menu__list li:nth-child(6) { transition-delay: 200ms; }
+.menu__list a {
+  display: flex; align-items: baseline; gap: 14px; padding-block: max(4px, .9vh);
+  text-decoration: none; color: var(--bone); -webkit-tap-highlight-color: transparent;
+  font-family: var(--f-display); font-weight: 800; font-variation-settings: "wdth" 118;
+  font-size: clamp(1.5rem, min(8.2vw, 6vh), 3.4rem); line-height: 1.02; letter-spacing: -.02em; text-transform: uppercase;
+}
+.menu__t {
+  flex: none; width: 5.6em; translate: 0 -.55em;
+  font: 500 var(--fs-xs)/1 var(--f-mono); letter-spacing: .12em; font-variant-numeric: tabular-nums;
+  color: var(--t, var(--gold));
+}
+.menu__list li:nth-child(1) { --t: #a4b1bf; } .menu__list li:nth-child(2) { --t: #d09468; }
+.menu__list li:nth-child(3) { --t: #ff6a1a; } .menu__list li:nth-child(4) { --t: #ff9a3c; }
+.menu__list li:nth-child(5) { --t: #ffc36b; } .menu__list li:nth-child(6) { --t: #fff5e0; }
+.menu__list a:hover .menu__w, .menu__list a:focus-visible .menu__w, .menu__list a:active .menu__w {
+  background: var(--molten); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.menu__cta { align-self: flex-start; }
+.menu__foot {
+  display: flex; justify-content: space-between; gap: 16px;
+  font: 500 var(--fs-xs)/1 var(--f-mono); letter-spacing: .18em; text-transform: uppercase; color: var(--slag);
+}
+
 /* =====================================================================
    BUTTONS
    ===================================================================== */
@@ -443,17 +538,26 @@ html.has-cursor, html.has-cursor a, html.has-cursor button, html.has-cursor [dat
   font-style: italic; font-weight: 700; font-variation-settings: "wdth" 112;
   padding-right: .06em;
 }
+/* the incandescent edge: a molten fill over the letters, never a text-stroke (the variable font's
+   glyphs overlap their own contours, and a stroke draws those seams inside every letter).
+   The box overflows the em by --ov so neither the mask nor the glow cut the ascenders flat. */
 .hero__title em::after {
-  content: attr(data-text); position: absolute; inset: 0; padding-right: inherit;
-  color: transparent; -webkit-text-stroke: .022em #ffcf8a;
-  text-shadow: 0 0 .18em rgb(255 110 30 / .5);
-  -webkit-mask-image: radial-gradient(circle 2.2em at var(--hx, -999px) var(--hy, 50%), #000, transparent),
+  --ov: .3em;
+  content: attr(data-text); position: absolute; inset: calc(var(--ov) * -1);
+  padding: var(--ov) calc(var(--ov) + .06em) var(--ov) var(--ov);
+  color: transparent;
+  background: linear-gradient(180deg, #fff5e0 18%, #ffc36b 48%, #ff7a1a 80%);
+  -webkit-background-clip: text; background-clip: text;
+  filter: drop-shadow(0 0 .1em rgb(255 120 30 / .75));
+  -webkit-mask-image: radial-gradient(circle 2.2em at calc(var(--hx, -999px) + var(--ov)) calc(var(--hy, 50%) + var(--ov)), #000, transparent),
     linear-gradient(90deg, transparent calc(var(--run) - 22%), #000 var(--run), transparent calc(var(--run) + 22%));
-  mask-image: radial-gradient(circle 2.2em at var(--hx, -999px) var(--hy, 50%), #000, transparent),
+  mask-image: radial-gradient(circle 2.2em at calc(var(--hx, -999px) + var(--ov)) calc(var(--hy, 50%) + var(--ov)), #000, transparent),
     linear-gradient(90deg, transparent calc(var(--run) - 22%), #000 var(--run), transparent calc(var(--run) + 22%));
   pointer-events: none;
 }
 .hero__title.is-lit em::after { animation: filo-run 2.4s var(--ease-inout) .2s both; }
+/* masked, filtered and scaled ×120 with the letter: by far the heaviest layer of the dive */
+html.is-diving .hero__title em::after { display: none; }
 @keyframes filo-run { from { --run: -40%; } to { --run: 140%; } }
 .hero__sub { color: var(--slag); max-width: 52ch; font-size: var(--fs-lg); line-height: 1.5; }
 .hero__actions { display: flex; flex-wrap: wrap; gap: 12px; }
@@ -534,7 +638,7 @@ section { position: relative; }
 /* the narrow cold state is a scale, not a narrower wdth: re-wrapping the lines would shift the page (CLS) */
 [data-forge] { transform-origin: 0 50%; transition: scale var(--dur-3) var(--ease-hammer), color calc(var(--dur-3) * 1.6) var(--ease-out), text-shadow calc(var(--dur-3) * 1.6) var(--ease-out), filter var(--dur-2); }
 .cta__title[data-forge] { transform-origin: 50% 50%; }
-[data-forge].is-cold { scale: .55 1; color: var(--ash); filter: blur(2px); }
+[data-forge].is-cold { scale: .55 1; color: #766253; filter: blur(2px); }
 [data-forge].is-struck {
   filter: none;
   animation: cool-down 2.2s ease-out forwards;
@@ -806,7 +910,7 @@ section { position: relative; }
           mask: linear-gradient(#000 0 0) top / 100% calc(100% - 6px) no-repeat, radial-gradient(4px at 6px 100%, transparent 98%, #000) bottom / 12px 6px repeat-x;
 }
 .kt__head { font-weight: 700; letter-spacing: .08em; }
-.kt__cut { color: #a08a78; }
+.kt__cut { color: #6e5a4d; }
 .kt__foot { color: #6d5a4c; }
 
 .karu__dash {
@@ -866,7 +970,7 @@ section { position: relative; }
   transition: box-shadow var(--dur-2), border-color var(--dur-2), translate var(--dur-2) var(--ease-out);
   will-change: transform;
 }
-.screen img { width: 100%; height: auto; }
+.screen img { width: 100%; height: auto; aspect-ratio: 16 / 10; }
 /* subtle depth: the capture lifts off the stack (translate composes with the fan transform) */
 .screen:hover, .screen:has(.screen__btn:focus-visible) { translate: 0 -8px; }
 /* entry cut (armed by JS only below the fold): each capture is uncovered from the bottom up,
@@ -898,7 +1002,7 @@ html.has-cursor .screen__btn { cursor: none; }
 .screen--1 {
   z-index: 3;
   transform:
-    translate3d(calc(var(--p) * 10%), calc(var(--p) * 22%), calc(var(--p) * 60px))
+    translate3d(calc(var(--p) * 10%), calc(var(--p) * var(--fan-1, 22%)), calc(var(--p) * 60px))
     rotateX(calc((1 - var(--p)) * 38deg)) rotateZ(calc((1 - var(--p)) * -12deg));
 }
 .screen--2 {
@@ -911,7 +1015,7 @@ html.has-cursor .screen__btn { cursor: none; }
 .screen--3 {
   z-index: 1;
   transform:
-    translate3d(calc(var(--p) * -4%), calc(var(--p) * -6% + (1 - var(--p)) * -8%), -80px)
+    translate3d(calc(var(--p) * -4%), calc(var(--p) * var(--fan-3, -6%) + (1 - var(--p)) * -8%), -80px)
     rotateX(calc((1 - var(--p)) * 38deg)) rotateZ(calc((1 - var(--p)) * -12deg));
   filter: brightness(calc(.45 + var(--p) * .3));
 }
@@ -925,7 +1029,8 @@ html.has-cursor .screen__btn { cursor: none; }
 }
 @keyframes scan { 0% { transform: translateY(0); opacity: 0; } 8% { opacity: 1; } 70% { opacity: 1; } 78%, 100% { transform: translateY(calc(var(--scan-h, 400px))); opacity: 0; } }
 @media (max-width: 1023px) {
-  .screens { aspect-ratio: 16 / 12; }
+  /* a wider fan: the edge of each capture at the back stays a full finger-sized target */
+  .screens { aspect-ratio: 16 / 12; --fan-1: 26%; --fan-3: -10%; }
 }
 
 /* =====================================================================
@@ -966,7 +1071,7 @@ html.has-cursor .screen__btn { cursor: none; }
   display: grid; grid-template-columns: 64px 1fr; gap: 16px; align-items: baseline;
   padding-block: clamp(24px, 3.4vw, 40px);
   border-bottom: 1px solid var(--line);
-  color: #7d695c;
+  color: #8f7a6c;
   transition: color var(--dur-2);
 }
 .step:last-child { border-bottom: 0; }
@@ -1154,7 +1259,7 @@ html.has-cursor .faq__item summary { cursor: none; }
 .lightbox[open] .lightbox__fig { animation: lb-in .55s var(--ease-out); }
 @keyframes lb-in { from { opacity: 0; transform: scale(.94) translateY(24px); } }
 .lightbox__fig img {
-  width: auto; max-width: 100%; max-height: 84vh; height: auto; border-radius: 12px;
+  width: auto; max-width: 100%; max-height: min(84vh, calc(100vh - 190px)); height: auto; border-radius: 12px;
   border: 1px solid var(--line-strong); background: var(--soot);
   box-shadow: 0 40px 120px -20px rgb(0 0 0 / .9), 0 0 90px -30px rgb(255 106 26 / .55);
 }
@@ -1166,8 +1271,19 @@ html.has-cursor .faq__item summary { cursor: none; }
   transition: border-color var(--dur-1), color var(--dur-1);
 }
 .lightbox__close:hover { border-color: var(--gold); color: var(--gold); }
+.lightbox__nav {
+  display: flex; align-items: center; justify-content: center; gap: 18px; margin-top: 14px;
+}
+.lightbox__nav[hidden] { display: none; }
+.lightbox__step {
+  width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center;
+  color: var(--bone); background: var(--soot-2); border: 1px solid var(--line-strong); cursor: pointer;
+  transition: border-color var(--dur-1), color var(--dur-1);
+}
+.lightbox__step:hover { border-color: var(--gold); color: var(--gold); }
+.lightbox__count { min-width: 4.5em; text-align: center; font: 500 12px/1 var(--f-mono); letter-spacing: .14em; color: var(--slag); font-variant-numeric: tabular-nums; }
 html.lb-open, html.lb-open * { cursor: auto !important; }
-html.lb-open .lightbox__close { cursor: pointer !important; }
+html.lb-open .lightbox__close, html.lb-open .lightbox__step { cursor: pointer !important; }
 html.lb-open .cursor { opacity: 0 !important; }
 
 .wa-float {
@@ -1243,9 +1359,11 @@ html.ch-on .ch__inner {
   55% { opacity: 1; }
   to { scale: 1; opacity: 1; filter: none; }
 }
+/* once invisible, a layer that keeps growing must stop catching taps meant for what lies under it */
 @keyframes ch-out {
   from { scale: 1; opacity: 1; filter: none; }
-  45% { opacity: 0; }
+  45% { opacity: 0; pointer-events: auto; }
+  46%, to { pointer-events: none; }
   to { scale: 3.2; opacity: 0; filter: blur(14px) brightness(2.2); }
 }
 /* keyboard focus inside a chamber: show it plainly, never half in depth */
@@ -1260,7 +1378,7 @@ html.ch-on .hero::after, html.ch-on .hero > .hero__scrim {
   animation-timeline: --hero, --hero;
   animation-range: exit 0% exit 100%, exit 0% exit 45%;
 }
-@keyframes ch-fade-out { to { opacity: 0; } }
+@keyframes ch-fade-out { to { opacity: 0; pointer-events: none; } }
 @keyframes hero-hold { from { translate: 0 0; } to { translate: 0 100svh; } }
 html.ch-on .hero > .hero__gl, html.ch-on .hero > .hero__inner {
   transform-origin: var(--dive-x, 50%) var(--dive-y, 50%);
@@ -1272,11 +1390,11 @@ html.ch-on .hero > .hero__gl { animation-name: hero-hold, hero-door-gl; }
 /* piecewise exponential: flying forward at a steady speed */
 @keyframes hero-door {
   0% { scale: 1; } 15% { scale: 1.7; } 28% { scale: 3.6; } 40% { scale: 9; }
-  50% { scale: 24; opacity: 1; } 58% { scale: 60; opacity: 1; } 66%, 100% { scale: 120; opacity: 0; }
+  50% { scale: 24; opacity: 1; } 58% { scale: 60; opacity: 1; pointer-events: auto; } 66%, 100% { scale: 120; opacity: 0; pointer-events: none; }
 }
 @keyframes hero-door-gl {
-  0% { scale: 1; filter: none; } 50% { scale: 1.5; opacity: 1; filter: brightness(1.5) saturate(1.2); }
-  72%, 100% { scale: 2.4; opacity: 0; filter: brightness(3); }
+  0% { scale: 1; filter: none; } 50% { scale: 1.5; opacity: 1; filter: brightness(1.5) saturate(1.2); pointer-events: auto; }
+  72%, 100% { scale: 2.4; opacity: 0; filter: brightness(3); pointer-events: none; }
 }
 
 /* ...and you come out through the "d" of "Ad": the camera pulls back from inside the element's
@@ -1289,7 +1407,8 @@ html.ch-on #nombre .ch__view {
   animation-range: entry 0% entry 100%, entry 0% entry 100%;
 }
 @keyframes land-from-d {
-  0%, 54% { scale: 44; opacity: 0; filter: brightness(2.4); }
+  0%, 54% { scale: 44; opacity: 0; filter: brightness(2.4); pointer-events: none; }
+  55% { pointer-events: auto; }
   62% { scale: 24; opacity: 1; } 72% { scale: 8.5; } 82% { scale: 3.2; filter: brightness(1.5); }
   91% { scale: 1.5; } 100% { scale: 1; opacity: 1; filter: none; }
 }
