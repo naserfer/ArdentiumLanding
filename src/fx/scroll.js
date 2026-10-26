@@ -71,7 +71,8 @@ export function initScrollFx() {
   if (!state.reduced) {
     [["#marquee", 1, 60], ["#marquee2", -1, 38]].forEach(([sel, dir, base]) => {
       const track = $(sel);
-      if (!track) return;
+      // not rendered (the depth journey hides the band): its width is 0 and cloning would never stop short
+      if (!track || !track.offsetParent) return;
       // clone content until it is well over twice the viewport for a seamless loop
       const original = [...track.children];
       let copies = 1;

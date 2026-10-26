@@ -47,7 +47,9 @@ Ya viene configurado:
 - Sección de preguntas frecuentes con contenido que responde búsquedas reales.
 - `robots.txt`, `sitemap.xml` y `llms.txt` (para buscadores con IA) que se generan en cada build.
 - Íconos para iPhone y Android, `favicon.ico` y `site.webmanifest`.
-- `public/_headers`: caché larga para los archivos del build y cabeceras de seguridad en Cloudflare.
+- `public/_headers`: caché larga para los archivos del build y cabeceras de seguridad en Cloudflare
+  (HSTS y Content-Security-Policy incluidas; si agregás un script o servicio externo, sumalo ahí).
+- `public/404.html`: página de error real (las URLs inexistentes responden 404, no la home).
 
 **Importante:** cuando tengan el dominio definitivo, ponelo en `siteUrl` dentro de `src/config.js`
 (por ejemplo `"https://ardentium.com.py"`). Con eso se completan la URL canónica, la imagen al compartir
@@ -93,7 +95,11 @@ src/
     reveal.js           entradas al hacer scroll y títulos "martillados"
     interact.js         botones magnéticos, tilt 3D, spotlight, contadores
     cursor.js           cursor de brasa
-    lightbox.js         ampliar capturas de MotelApp y Sabor del Chipá
+    lightbox.js         ampliar capturas de MotelApp y Sabor del Chipá (galería con flechas y swipe)
+    story.js            recorrido en profundidad: cada sección es una cámara
+    tunnel.js           túnel de brasas entre cámaras y el secreto del 1538
+    dive.js             la entrada por la "d": el zoom se reproduce entero, sin importar la velocidad
+    menu.js             menú del celular, cada parada con su temperatura
     footer.js           wordmark gigante del pie que se funde bajo el cursor
     ticker.js           loop único + estado compartido de scroll y mouse
 ```
@@ -126,5 +132,6 @@ disponible, el nombre se muestra con un degradé de metal fundido en CSS.
 
 ## Tipografías
 
-Se cargan desde Google Fonts: **Anybody** (títulos, fuente variable de ancho), **Instrument Sans**
-(texto) y **JetBrains Mono** (etiquetas técnicas).
+Servidas desde el propio sitio (`assets/fonts/`, los mismos archivos y subconjuntos que entrega
+Google Fonts, sin depender de un CSS externo que bloquee la carga): **Anybody** (títulos, fuente
+variable de ancho), **Instrument Sans** (texto) y **JetBrains Mono** (etiquetas técnicas).
