@@ -188,7 +188,8 @@ export function initStory() {
       }
       const tl = gsap.timeline({
         defaults: { ease: "none" },
-        scrollTrigger: { trigger: caseEl, start: "top bottom", end: "bottom top", scrub: 0.8, onToggle: hint([stage, bg, fast]) },
+        // the captures are never promoted: their layer would keep a blurry raster (see .screen in main.css)
+        scrollTrigger: { trigger: caseEl, start: "top bottom", end: "bottom top", scrub: 0.8, onToggle: hint([stage.matches(".screens") ? null : stage, bg, fast]) },
       });
       if (bg) tl.fromTo(bg, { yPercent: 40 }, { yPercent: -40, duration: 1 }, 0);
       tl.fromTo(stage, { y: 80 }, { y: -80, duration: 1 }, 0);
