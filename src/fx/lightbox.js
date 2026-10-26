@@ -1,5 +1,5 @@
 /**
- * LIGHTBOX — click a case capture (MotelApp, Sabor del Chipá) to see it full size.
+ * LIGHTBOX — click a case capture (MotelApp, Sabor del Chipá) or a founder's photo to see it full size.
  * Built on <dialog>: focus is trapped and Esc closes it natively.
  * Each case is a small gallery: arrows, ← → keys or a horizontal swipe step through its captures,
  * so the ones at the back of the stack do not depend on the sliver of them that shows.
@@ -19,10 +19,10 @@ export function initLightbox() {
     const btn = set[at];
     const src = btn.querySelector("img");
     const tag = btn.closest("figure")?.querySelector("figcaption");
-    // the full-size original, not the srcset candidate sized for the stack
-    img.src = src.src;
+    // the full-size original, not the srcset candidate sized for the stack (portraits name theirs)
+    img.src = src.dataset.full || src.src;
     img.alt = src.alt;
-    const name = btn.closest(".case")?.querySelector(".case__name")?.textContent.trim() || "";
+    const name = (btn.closest(".case")?.querySelector(".case__name") || btn.closest(".founder")?.querySelector(".tile__name"))?.textContent.trim() || "";
     cap.textContent = [name, tag ? tag.textContent : ""].filter(Boolean).join(" · ");
     if (count) count.textContent = `${at + 1} / ${set.length}`;
   };
@@ -58,6 +58,9 @@ export function initLightbox() {
       // front capture first, as the stack shows them
       set = [...(btn.closest(".screens")?.querySelectorAll("[data-zoom]") || [btn])].reverse();
       opener = btn;
+      const portrait = !!btn.closest(".founder");
+      dlg.classList.toggle("is-portrait", portrait);
+      dlg.setAttribute("aria-label", portrait ? "Foto ampliada" : "Captura ampliada");
       if (nav) nav.hidden = set.length < 2;
       show(set.indexOf(btn));
       html.classList.add("lb-open");

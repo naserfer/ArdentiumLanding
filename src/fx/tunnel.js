@@ -35,10 +35,12 @@ export function initTunnel(canvas) {
 
   let pass = 0, drawnY = NaN, melt = 0, drift = 0;
   onRead((s) => {
-    // the hero's exit and every chamber's entry are passages: a bell over each
+    // the hero's exit and every chamber's entry are passages: a bell over each. A chamber's
+    // content is readable from about half its entry on, so its bell is over by then: the
+    // sparks fly past while it arrives, never across what you are reading
     let p = Math.sin(Math.PI * clamp(s.scrollY / s.vh)) * 0.9;
     for (let i = 1; i < rooms.length; i++) {
-      const e = 1 - rooms[i].top / s.vh;
+      const e = (1 - rooms[i].top / s.vh) / 0.5;
       if (e > 0 && e < 1) p = Math.max(p, Math.sin(Math.PI * e));
     }
     pass = p;
@@ -52,7 +54,7 @@ export function initTunnel(canvas) {
     drawnY = s.scrollY;
 
     const m = melt / MELT_S;
-    const I = Math.min(1, 0.1 + pass * 0.9 + m);
+    const I = Math.min(1, 0.03 + pass * 0.97 + m);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
     if (I < 0.02) return;
