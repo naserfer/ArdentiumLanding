@@ -9,7 +9,7 @@ export const CONFIG = {
   // Dirección pública del sitio, sin barra final. Se usa para SEO: URL canónica, imagen al
   // compartir en redes, sitemap.xml y datos estructurados. Ej.: "https://ardentium.com.py"
   // (también se puede definir con la variable de entorno SITE_URL al hacer el build).
-  siteUrl: "",
+  siteUrl: "https://ardentium.tech",
   whatsapp: "595982906021",
   whatsappMessage: "Hola Ardentium, quiero contarles sobre un proyecto.",
 };

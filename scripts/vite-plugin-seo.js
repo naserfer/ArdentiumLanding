@@ -58,19 +58,24 @@ export function extraFiles(ctx, date = new Date()) {
 > Fábrica de desarrollo de software en Asunción, Paraguay, fundada en 2026 por Naser Fernández e Iván Ortiz, que entre los dos suman más de 10 años en el mundo del software. Lema: Vanguardia.
 
 ## Servicios
-- Software a medida y SaaS: plataformas web y sistemas en la nube.
-- Apps de escritorio y offline: sistemas que funcionan sin internet, imprimen, sincronizan y se respaldan solos.
-- Apps móviles para iOS y Android.
-- IA y automatización: asistentes, bots e integraciones.
+- [Software a medida y SaaS](${base}/#servicios): plataformas web y sistemas en la nube.
+- [Apps de escritorio y offline](${base}/#servicios): sistemas que funcionan sin internet, imprimen, sincronizan y se respaldan solos.
+- [Apps móviles](${base}/#servicios): apps para iOS y Android.
+- [IA y automatización](${base}/#servicios): asistentes, bots e integraciones.
 
 ## Trabajos
-- KarúBox (producto propio): POS en la nube para lomiterías y restaurantes, con inventario automático, puntos de fidelidad, impresión remota y reportes en tiempo real. https://www.karubox.com.py/
-- MotelApp: sistema de escritorio para recepción y administración de moteles, con tablero de habitaciones en vivo, cobro, tickets térmicos y analítica; opera sin internet y sincroniza con la nube.
-- Sabor del Chipá: tienda online de chipá artesanal congelado en Buenos Aires, con catálogo de variedades, carrito que envía el pedido por WhatsApp y panel para actualizar precios y stock. https://sabordelchipa.vercel.app/
+- [KarúBox](https://www.karubox.com.py/): producto propio. POS en la nube para lomiterías y restaurantes, con inventario automático, puntos de fidelidad, impresión remota y reportes en tiempo real.
+- [MotelApp](${base}/#motelapp): sistema de escritorio para recepción y administración de moteles, con tablero de habitaciones en vivo, cobro, tickets térmicos y analítica; opera sin internet y sincroniza con la nube.
+- [Sabor del Chipá](https://sabordelchipa.vercel.app/): tienda online de chipá artesanal congelado en Buenos Aires, con catálogo de variedades, carrito que envía el pedido por WhatsApp y panel para actualizar precios y stock.
+
+## Empresa
+- [Proceso](${base}/#proceso): fundir, moldear, forjar, templar y entregar, en ciclos cortos con avances visibles.
+- [Equipo](${base}/#equipo): Naser Fernández e Iván Ortiz, cofundadores.
+- [Preguntas frecuentes](${base}/#preguntas): costos, plazos, sistemas sin internet y soporte después de la entrega.
 
 ## Contacto
-- Sitio: ${base || "(sin dominio configurado)"}/
-${ctx.hasPhone ? `- WhatsApp: ${ctx.pretty} (${ctx.link})\n` : ""}`,
+- [Sitio](${base || ""}/): ${base || "(sin dominio configurado)"}
+${ctx.hasPhone ? `- [WhatsApp](${ctx.link}): ${ctx.pretty}\n` : ""}`,
   });
   return files;
 }
