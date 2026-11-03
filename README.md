@@ -3,8 +3,8 @@
 Landing page de **Ardentium**, fábrica de desarrollo (Asunción, Paraguay). Lema: *Vanguardia*.
 
 Hecha sin dependencias de runtime: el fondo de metal fundido es **WebGL puro** (shader propio),
-las chispas son un sistema de partículas en Canvas 2D y todas las animaciones corren en un único
-`requestAnimationFrame`. Resultado: carga liviana y 60 fps sin librerías externas.
+las chispas son un sistema de partículas en Canvas 2D y todo corre en un único
+`requestAnimationFrame` que se detiene cuando nada se mueve. Unos 18 KB de JavaScript.
 
 ## Cómo correrlo
 
@@ -77,58 +77,51 @@ Todos los botones de contacto y el número visible en la sección *Contacto* se 
 
 ```
 index.html              contenido y estructura de la página
-public/                 se copia tal cual al build: og.jpg, íconos, manifest, _headers
+public/                 se copia tal cual al build: og.jpg, íconos, manifest, _headers, fotos grandes del equipo
 scripts/
   vite-plugin-seo.js    completa las URLs de SEO y genera robots.txt, sitemap.xml y llms.txt
 assets/
   favicon.svg           logo (monograma A forjada)
+  fonts/                tipografías propias (woff2)
+  team/                 fotos de los fundadores
   works/                capturas reales de MotelApp (sin logo del cliente) y Sabor del Chipá
 src/
-  config.js             WhatsApp y mensaje
-  main.js               arma todo y corre el loop de animación
-  styles/main.css       diseño: tokens de color, tipografía y secciones
+  config.js             WhatsApp, mensaje y dominio
+  main.js               arma la página: hero, chispas y módulos de interfaz
   fx/
-    forge-gl.js         shader de metal fundido + wordmark de metal líquido
-    sparks.js           chispas y brasas
-    preloader.js        intro "encendiendo la forja"
-    scroll.js           nav, termómetro, marquesina, manifiesto, casos y proceso
-    reveal.js           entradas al hacer scroll y títulos "martillados"
-    interact.js         botones magnéticos, tilt 3D, spotlight, contadores
-    cursor.js           cursor de brasa
-    lightbox.js         ampliar capturas de MotelApp y Sabor del Chipá (galería con flechas y swipe)
-    story.js            recorrido en profundidad: cada sección es una cámara
-    tunnel.js           túnel de brasas entre cámaras y el secreto del 1538
-    dive.js             la entrada por la "d": el zoom se reproduce entero, sin importar la velocidad
-    menu.js             menú del celular, cada parada con su temperatura
-    footer.js           wordmark gigante del pie que se funde bajo el cursor
-    ticker.js           loop único + estado compartido de scroll y mouse
+    loop.js             un solo requestAnimationFrame, que se duerme cuando nada se mueve
+    forge.js            shader de metal fundido del hero (calor con el cursor, martillazo con el clic)
+    sparks.js           chispas y brasas (Canvas 2D)
+  ui/
+    nav.js              barra, progreso de lectura, link activo, botón flotante y menú del celular
+    reveal.js           entradas al hacer scroll, contadores, demo de KarúBox, proceso y tarjetas
+    lightbox.js         ampliar capturas y fotos (galería con flechas, teclado y swipe)
+  styles/
+    main.css            punto de entrada (importa los demás)
+    tokens.css          tipografías, colores, tamaños y tiempos de animación
+    base.css            reset, contenedor, títulos de sección y entradas
+    components.css      nav, menú móvil y botones
+    sections.css        hero, marquesina, el nombre, servicios, trabajos, proceso, equipo, FAQ, contacto y pie
+    overlays.css        lightbox y botón flotante de WhatsApp
 ```
 
 ## Efectos incluidos
 
-- **Intro:** el logo se dibuja, un pirómetro sube a 1538 °C (punto de fusión del hierro) y las
-  puertas del horno se abren sobre el hero.
-- **Hero WebGL:** metal fundido que reacciona al cursor (calor) y al clic (martillazo con onda
-  expansiva, chispas y sacudida). ARDENTIUM se "vierte" de izquierda a derecha y queda como
-  metal colado: relieve con luz que sigue al cursor, molde oscuro alrededor, metal líquido
-  por dentro y temblor de calor. Al bajar, el metal se enfría.
-- **Logo integrado:** la A forjada es la primera letra de ARDENTIUM (barra y pie).
-- **Termómetro lateral y barra de progreso en la nav:** el scroll es temperatura, de 20 °C a 1538 °C.
-- **Marquesina doble:** servicios y tecnologías en sentidos opuestos; acelera y se inclina con el scroll.
-- **Manifiesto** que se calienta palabra por palabra y tarjeta de elemento "Ad" con tilt 3D.
-- **Títulos martillados:** entran angostos y fríos y se ensanchan al rojo vivo (fuente variable).
-- **Servicios:** punto de calor que sigue al cursor; en el celular se encienden al pasar por el centro.
-- **KarúBox:** pedido → impresión remota (el ticket sale de la impresora, el LED parpadea) →
-  ventas que suben en vivo, con pasos 1‑2‑3 sincronizados con el scroll.
-- **MotelApp** y **Sabor del Chipá:** capturas reales que se despliegan en 3D, láser de escaneo y clic para ampliar.
-- **Proceso:** riel de metal fundido que se llena y enciende cada paso.
-- **Contacto:** la lava del fondo se calienta a medida que te acercás.
-- **Pie:** wordmark gigante en contorno que se funde donde pasa el cursor.
-- Botones magnéticos, cursor de brasa, textos que se decodifican al pasar el mouse.
+Pocos y con un motivo cada uno: que se sienta la forja sin tapar el mensaje.
 
-Accesibilidad: respeta `prefers-reduced-motion` (sin intro ni partículas), tiene enlace para
-saltar al contenido, foco visible y textos alternativos en las capturas. Si WebGL no está
-disponible, el nombre se muestra con un degradé de metal fundido en CSS.
+- **Hero WebGL:** la boca de una forja bajo el título. El cursor calienta el metal y un clic es un
+  martillazo (onda expansiva y chispas). En el celular el fondo queda quieto y responde al toque.
+  Al bajar, el metal se enfría. Sin WebGL, el mismo resplandor se pinta con CSS.
+- **"vanguardia":** un filo incandescente recorre la palabra una vez cuando carga la página.
+- **El nombre:** la tarjeta de elemento "Ad" (*ardens* + *-ium*, 1538 °C, el punto de fusión del hierro).
+- **KarúBox:** demo animada del flujo pedido → impresión remota en cocina → ventas en vivo, una sola vez al aparecer.
+- **MotelApp** y **Sabor del Chipá:** capturas reales en abanico; clic para ampliar.
+- **Proceso:** riel de metal que se llena y enciende cada paso al llegar a la mitad de la pantalla.
+- **Servicios:** punto de calor que sigue al cursor; en el celular se encienden al pasar por el centro.
+
+Accesibilidad: respeta `prefers-reduced-motion` (sin animaciones ni partículas), tiene enlace para
+saltar al contenido, foco visible y textos alternativos en las capturas. Sin JavaScript la página
+se ve completa.
 
 ## Tipografías
 
