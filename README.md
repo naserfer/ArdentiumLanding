@@ -110,7 +110,7 @@ src/
 Pocos y con un motivo cada uno: que se sienta la forja sin tapar el mensaje.
 
 - **Hero WebGL:** la boca de una forja bajo el título. El cursor calienta el metal y un clic es un
-  martillazo (onda expansiva y chispas). En el celular el fondo queda quieto y responde al toque.
+  martillazo (onda expansiva y chispas). En el celular un toque también martilla y suben brasas.
   Al bajar, el metal se enfría. Sin WebGL, el mismo resplandor se pinta con CSS.
 - **"vanguardia":** un filo incandescente recorre la palabra una vez cuando carga la página.
 - **El nombre:** la tarjeta de elemento "Ad" (*ardens* + *-ium*, 1538 °C, el punto de fusión del hierro).
@@ -118,6 +118,10 @@ Pocos y con un motivo cada uno: que se sienta la forja sin tapar el mensaje.
 - **MotelApp** y **Sabor del Chipá:** capturas reales en abanico; clic para ampliar.
 - **Proceso:** riel de metal que se llena y enciende cada paso al llegar a la mitad de la pantalla.
 - **Servicios:** punto de calor que sigue al cursor; en el celular se encienden al pasar por el centro.
+- **Títulos martillados:** cada título entra angosto y al rojo blanco, se ensancha y se enfría, con chispas.
+- **Capturas en abanico** al aparecer, **íconos que se dibujan** y **botones naranjas que largan chispas**
+  (al pasar el mouse o al tocarlos).
+- **El hero se enfría y se aleja** al bajar (animación de CSS ligada al scroll, donde el navegador la soporta).
 
 Accesibilidad: respeta `prefers-reduced-motion` (sin animaciones ni partículas), tiene enlace para
 saltar al contenido, foco visible y textos alternativos en las capturas. Sin JavaScript la página

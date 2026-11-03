@@ -10,7 +10,7 @@ import { Sparks } from "./fx/sparks.js";
 import { initNav } from "./ui/nav.js";
 import { initReveal, initCounters, initKaru, initSteps, initCardHeat } from "./ui/reveal.js";
 import { initLightbox } from "./ui/lightbox.js";
-import { initTilt, initButtonSparks, initTitleHeat, headingSparks } from "./ui/heat.js";
+import { initButtonSparks, headingSparks } from "./ui/heat.js";
 
 const html = document.documentElement;
 
@@ -31,13 +31,14 @@ let heroVisible = true;
 watchVisible(hero, (v) => { heroVisible = v; if (v) wake(); });
 
 const sparks = state.reduced ? null : new Sparks(document.getElementById("sparks"));
-if (sparks && state.pointerFine) {
-  // a few embers rise off the forge mouth while the hero is on screen (desktop only)
+if (sparks) {
+  // embers rise off the forge mouth while the hero is on screen (fewer on phones)
   let acc = 0;
+  const rate = state.pointerFine ? 4 : 2.5;
   sparks.addEmitter((dt, sp) => {
     if (!heroVisible) return false;
     const r = hero.getBoundingClientRect();
-    acc += dt * 4;
+    acc += dt * rate;
     while (acc > 1) { acc--; sp.ember(state.vw * (0.5 + (Math.random() + Math.random() - 1) * 0.42), Math.min(state.vh, r.bottom) - 10 - Math.random() * 60); }
     return true;
   });
@@ -88,9 +89,7 @@ initKaru();
 initSteps();
 initCardHeat();
 initLightbox();
-initTilt();
 initButtonSparks(sparks);
-initTitleHeat();
 
 // the hero lands: its parts fade up (CSS) and the incandescent edge runs once through "vanguardia"
 requestAnimationFrame(() => html.classList.add("is-ready"));

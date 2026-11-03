@@ -4,7 +4,7 @@
  * Mostly black, with the contained glow of a forge mouth just below the frame, bent by hot air.
  * Colours follow the black‑body ramp of heated steel (the same palette as the CSS tokens).
  * The cursor warms the metal under it and a click is a hammer strike (shock ring + flash).
- * On touch screens and with reduced motion the ground holds still: it only redraws for a strike.
+ * With reduced motion the ground holds still: it only redraws for a strike.
  */
 import { state, lerp, watchVisible } from "./loop.js";
 
@@ -79,8 +79,8 @@ export class Forge {
     this.canvas = canvas;
     this.ok = false;
     this.visible = true;
-    this.animated = state.pointerFine && !state.reduced;   // touch / reduced motion: a still ground
-    this.quality = state.mobile ? 0.6 : 0.8;
+    this.animated = !state.reduced;      // reduced motion: a still ground
+    this.quality = state.mobile ? 0.5 : 0.8;
     this.heat = 0;
     this.heatTarget = 0;
     this.mx = 0; this.my = 0; this.tx = 0; this.ty = 0;
