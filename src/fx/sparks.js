@@ -3,7 +3,7 @@
  * Embers drift upward and flicker; sparks fly as hot streaks, fall with gravity and cool
  * through white → gold → orange → red before they die.
  */
-import { state } from "./ticker.js";
+import { state, wake } from "./loop.js";
 
 const COLORS = [
   [255, 250, 235], // white hot
@@ -53,6 +53,7 @@ export class Sparks {
 
   /** Radial burst — a hammer blow. */
   burst(x, y, n = 36, power = 1) {
+    wake();
     for (let i = 0; i < n; i++) {
       const a = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.5;
       const sp = (180 + Math.random() * 620) * power;
@@ -62,6 +63,7 @@ export class Sparks {
 
   /** Line burst — used when a heading gets "struck". */
   line(x0, x1, y, n = 28) {
+    wake();
     for (let i = 0; i < n; i++) {
       const x = x0 + Math.random() * (x1 - x0);
       const a = -Math.PI / 2 + (Math.random() - 0.5) * 1.6;
@@ -77,17 +79,21 @@ export class Sparks {
     });
   }
 
-  /** Continuous emitter: fn(dt) is called every frame and may call spawn/ember. */
+  /** Continuous emitter: fn(dt, sparks) runs every frame, may spawn, and returns whether it is active. */
   addEmitter(fn) { this.emitters.push(fn); }
 
+  /** Draws a frame; returns whether anything is alive (or an emitter is active). */
   tick(s) {
     const { ctx, dpr } = this;
     const dt = s.dt;
-    for (const e of this.emitters) e(dt, this);
+    let active = false;
+    for (const e of this.emitters) if (e(dt, this)) active = true;
+    if (!this.p.length && !this.drawn) return active;
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    if (!this.p.length) return;
+    this.drawn = this.p.length > 0;
+    if (!this.p.length) return active;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.globalCompositeOperation = "lighter";
     ctx.lineCap = "round";
@@ -121,5 +127,6 @@ export class Sparks {
       }
     }
     ctx.globalCompositeOperation = "source-over";
+    return true;
   }
 }

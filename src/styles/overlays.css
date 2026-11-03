@@ -1,0 +1,61 @@
+/* =====================================================================
+   OVERLAYS — lightbox (case captures, founder photos) and the floating WhatsApp button
+   ===================================================================== */
+.lightbox {
+  width: min(1400px, 94vw); max-width: none; max-height: none;
+  padding: 0; border: 0; background: transparent; color: var(--bone); overflow: visible;
+}
+.lightbox::backdrop { background: rgb(8 6 5 / .88); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.lightbox__fig { display: grid; gap: 14px; justify-items: center; }
+.lightbox[open] .lightbox__fig { animation: lb-in .55s var(--ease-out); }
+@keyframes lb-in { from { opacity: 0; transform: scale(.94) translateY(24px); } }
+.lightbox__fig img {
+  width: auto; max-width: 100%; max-height: min(84vh, calc(100vh - 190px)); height: auto; border-radius: 12px;
+  border: 1px solid var(--line-strong); background: var(--soot);
+  box-shadow: 0 40px 120px -20px rgb(0 0 0 / .9), 0 0 90px -30px rgb(255 106 26 / .55);
+}
+/* a founder's portrait: round, like a profile photo opened on its own */
+.lightbox.is-portrait .lightbox__fig img {
+  width: min(480px, 84vw, 68vh); height: auto; max-height: none; aspect-ratio: 1; object-fit: cover;
+  border-radius: 50%; border: 2px solid rgb(255 195 107 / .35);
+}
+.lightbox__fig figcaption { font-family: var(--f-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--slag); }
+.lightbox__close {
+  position: fixed; top: calc(18px + env(safe-area-inset-top, 0px)); right: 18px;
+  width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
+  color: var(--bone); background: var(--soot-2); border: 1px solid var(--line-strong); cursor: pointer;
+  transition: border-color var(--dur-1), color var(--dur-1);
+}
+.lightbox__close:hover { border-color: var(--gold); color: var(--gold); }
+.lightbox__nav {
+  display: flex; align-items: center; justify-content: center; gap: 18px; margin-top: 14px;
+}
+.lightbox__nav[hidden] { display: none; }
+.lightbox__step {
+  width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center;
+  color: var(--bone); background: var(--soot-2); border: 1px solid var(--line-strong); cursor: pointer;
+  transition: border-color var(--dur-1), color var(--dur-1);
+}
+.lightbox__step:hover { border-color: var(--gold); color: var(--gold); }
+.lightbox__count { min-width: 4.5em; text-align: center; font: 500 12px/1 var(--f-mono); letter-spacing: .14em; color: var(--slag); font-variant-numeric: tabular-nums; }
+
+.wa-float {
+  position: fixed; z-index: 55;
+  right: calc(18px + env(safe-area-inset-right, 0px));
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  width: 58px; height: 58px; border-radius: 50%;
+  display: grid; place-items: center;
+  color: #190803; background: var(--molten); background-size: 200% 100%; background-position: 30% 0;
+  box-shadow: 0 10px 30px -6px rgb(255 106 26 / .8);
+  transition: transform var(--dur-2) var(--ease-out), opacity var(--dur-2);
+}
+.wa-float svg { width: 28px; height: 28px; }
+.wa-float::before {
+  content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid var(--ember);
+  animation: ring 2.4s ease-out infinite; pointer-events: none;
+}
+@keyframes ring { from { transform: scale(.85); opacity: .9; } to { transform: scale(1.5); opacity: 0; } }
+.wa-float:hover { transform: scale(1.08) rotate(-6deg); }
+.wa-float.is-away { opacity: 0; transform: scale(.6); pointer-events: none; }
+.wa-float.is-away::before { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .wa-float::before { display: none; } }
