@@ -47,8 +47,8 @@ html:not(.gl-ready) .hero__gl { background: radial-gradient(60% 45% at 58% 105%,
   font-style: italic; font-weight: 700; font-variation-settings: "wdth" 112;
   padding-right: .06em;
 }
-/* the incandescent edge runs once through "vanguardia" when the page lands: a molten fill
-   over the letters, masked by a moving band (never a text-stroke, which shows the variable
+/* the incandescent edge runs once through "vanguardia" when the page lands (and follows the
+   cursor on desktop): a molten fill over the letters, masked by a moving band (never a text-stroke, which shows the variable
    font's overlapping contours) */
 @property --run { syntax: "<percentage>"; inherits: false; initial-value: -40%; }
 .hero__title em::after {
@@ -59,8 +59,11 @@ html:not(.gl-ready) .hero__gl { background: radial-gradient(60% 45% at 58% 105%,
   background: linear-gradient(180deg, #fff5e0 18%, #ffc36b 48%, #ff7a1a 80%);
   -webkit-background-clip: text; background-clip: text;
   filter: drop-shadow(0 0 .1em rgb(255 120 30 / .75));
-  -webkit-mask-image: linear-gradient(90deg, transparent calc(var(--run) - 22%), #000 var(--run), transparent calc(var(--run) + 22%));
-  mask-image: linear-gradient(90deg, transparent calc(var(--run) - 22%), #000 var(--run), transparent calc(var(--run) + 22%));
+  /* two windows onto the fill: the cursor's heat (desktop, heat.js) and the band that runs once */
+  -webkit-mask-image: radial-gradient(circle 2.2em at calc(var(--hx, -999px) + var(--ov)) calc(var(--hy, 50%) + var(--ov)), #000, transparent),
+    linear-gradient(90deg, transparent calc(var(--run) - 22%), #000 var(--run), transparent calc(var(--run) + 22%));
+  mask-image: radial-gradient(circle 2.2em at calc(var(--hx, -999px) + var(--ov)) calc(var(--hy, 50%) + var(--ov)), #000, transparent),
+    linear-gradient(90deg, transparent calc(var(--run) - 22%), #000 var(--run), transparent calc(var(--run) + 22%));
   animation: filo-run 2.4s var(--ease-inout) 1s both;
   pointer-events: none;
 }
@@ -180,7 +183,7 @@ html:not(.gl-ready) .hero__gl { background: radial-gradient(60% 45% at 58% 105%,
    SERVICES — cards with a heat spot under the cursor
    ===================================================================== */
 .cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-@media (max-width: 1100px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1279px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px) { .cards { grid-template-columns: 1fr; } }
 .card {
   --mx: 50%; --my: 50%; --spot: 0;
@@ -213,7 +216,8 @@ html:not(.gl-ready) .hero__gl { background: radial-gradient(60% 45% at 58% 105%,
 }
 .card__title {
   font-family: var(--f-display); font-weight: 700; font-variation-settings: "wdth" 104;
-  font-size: var(--fs-xl); line-height: 1.08; letter-spacing: -.01em; text-wrap: balance;
+  font-size: clamp(1.3rem, 1.05rem + .7vw, 1.7rem); line-height: 1.08; letter-spacing: -.01em; text-wrap: balance;
+  overflow-wrap: break-word; hyphens: auto;
   transition: color var(--dur-1);
 }
 .card:hover .card__title { color: var(--white-hot); }

@@ -9,14 +9,18 @@ const io = (cb, options) => ("IntersectionObserver" in window ? new Intersection
 const below = (el) => el.getBoundingClientRect().top >= innerHeight;
 const motion = () => !state.reduced && "IntersectionObserver" in window;
 
-/** [data-reveal] blocks fade up; siblings that arrive together get a short stagger. */
-export function initReveal() {
+/**
+ * [data-reveal] blocks fade up; siblings that arrive together get a short stagger.
+ * onIn(el) runs as each one lands (main.js throws sparks off the headings).
+ */
+export function initReveal(onIn) {
   if (!motion()) return;
   const obs = io((entries) => {
     for (const e of entries) {
       if (!e.isIntersecting) continue;
       obs.unobserve(e.target);
       e.target.classList.add("is-in");
+      onIn?.(e.target);
     }
   }, { rootMargin: "0px 0px -8% 0px" });
   const order = new Map();

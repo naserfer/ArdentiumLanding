@@ -1,0 +1,58 @@
+/* =====================================================================
+   HEAT DETAILS — small, one-shot or pointer-driven effects layered on top of the sections.
+   All of them animate transform, opacity, colour or a mask: no layout work, and none run
+   with reduced motion (base.css shortens every animation and transition to nothing).
+   ===================================================================== */
+
+/* ---------- headings are "struck": they land narrow and white-hot, then cool to bone ---------- */
+.sec-head.is-pending .display { scale: .88 1; transform-origin: 0 60%; }
+.sec-head.is-pending.is-in .display {
+  scale: 1 1;
+  transition: scale .9s cubic-bezier(.2, 1.6, .35, 1) .1s;
+  animation: struck 1.9s ease-out .1s both;
+}
+.cta__title.is-pending { scale: .88 1; }
+.cta__title.is-pending.is-in {
+  scale: 1 1;
+  transition: opacity var(--dur-3) var(--ease-out) var(--d, 0s), translate var(--dur-3) var(--ease-out) var(--d, 0s), scale .9s cubic-bezier(.2, 1.6, .35, 1) .1s;
+  animation: struck 1.9s ease-out .1s both;
+}
+@keyframes struck {
+  0% { color: var(--white-hot); text-shadow: 0 0 28px rgb(255 195 107 / .9), 0 0 70px rgb(255 106 26 / .7); }
+  35% { color: var(--gold); text-shadow: 0 0 22px rgb(255 106 26 / .6); }
+  100% { color: var(--bone); text-shadow: 0 0 0 transparent; }
+}
+
+/* ---------- service icons are drawn in when their card lands ---------- */
+.card__ico :is(path, rect) { stroke-dasharray: 140; }
+.card.is-in .card__ico :is(path, rect) { animation: redraw 1.4s var(--ease-out) calc(var(--d, 0s) + .2s) both; }
+.card:hover .card__ico :is(path, rect) { animation: redraw 1.1s var(--ease-out); }
+@keyframes redraw { from { stroke-dashoffset: 140; } to { stroke-dashoffset: 0; } }
+
+/* ---------- captures: the stack lands closed and fans open ---------- */
+.screens.is-pending .screen--3 { transform: translate(25%, 36%) rotate(-2.5deg); }
+.screens.is-pending .screen--2 { transform: translate(12.5%, 18%) rotate(-1.2deg); }
+.screens.is-pending.is-in :is(.screen--2, .screen--3) {
+  transform: none;
+  transition: transform 1.2s var(--ease-out) .35s, translate var(--dur-2) var(--ease-out), box-shadow var(--dur-2), border-color var(--dur-2), filter var(--dur-2);
+}
+
+/* ---------- element tiles lean toward the cursor, with a glare (heat.js sets the variables) ---------- */
+[data-tilt] {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform var(--dur-2) var(--ease-out);
+}
+.tile::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(45% 40% at var(--gx, 50%) var(--gy, 30%), rgb(255 200 130 / .18), transparent 70%);
+  mix-blend-mode: screen; opacity: 0; transition: opacity var(--dur-2);
+}
+.tile:hover::after { opacity: 1; }
+
+/* ---------- the hero cools and recedes as you scroll away (CSS scroll-driven, where supported) ---------- */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__inner { animation: hero-recede linear both; animation-timeline: scroll(root); animation-range: 0 85svh; }
+  }
+}
+@keyframes hero-recede { to { opacity: .2; translate: 0 -6%; scale: .97; } }

@@ -10,6 +10,7 @@ import { Sparks } from "./fx/sparks.js";
 import { initNav } from "./ui/nav.js";
 import { initReveal, initCounters, initKaru, initSteps, initCardHeat } from "./ui/reveal.js";
 import { initLightbox } from "./ui/lightbox.js";
+import { initTilt, initButtonSparks, initTitleHeat, headingSparks } from "./ui/heat.js";
 
 const html = document.documentElement;
 
@@ -81,12 +82,15 @@ onTick((s) => {
 
 /* ---------- page ---------- */
 initNav();
-initReveal();
+initReveal(headingSparks(sparks));
 initCounters();
 initKaru();
 initSteps();
 initCardHeat();
 initLightbox();
+initTilt();
+initButtonSparks(sparks);
+initTitleHeat();
 
 // the hero lands: its parts fade up (CSS) and the incandescent edge runs once through "vanguardia"
 requestAnimationFrame(() => html.classList.add("is-ready"));
